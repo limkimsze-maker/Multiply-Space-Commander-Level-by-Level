@@ -6,176 +6,1353 @@
 <title>Multiply Flyer: 13-Level Space Commander</title>
 
 <style>
-:root{--ink:#172033;--blue:#4f46e5;--gold:#facc15}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-html,body,#app,#game,#gameArea,button,a{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
-html,body{margin:0;width:100%;height:100dvh;min-height:100dvh;overflow:hidden;font-family:"Comic Sans MS","Comic Neue","Trebuchet MS",sans-serif;background:#050816;color:var(--ink)}
-#app{position:relative;width:100vw;height:100dvh;min-height:100dvh;overflow:hidden;background:radial-gradient(circle at 12% 18%,#fff 0 1px,transparent 2px),radial-gradient(circle at 26% 62%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 74% 14%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 88% 42%,#fff 0 1px,transparent 2px),radial-gradient(circle at 64% 78%,#c4b5fd 0 1.5px,transparent 3px),radial-gradient(circle at 38% 32%,#93c5fd 0 1px,transparent 2px),linear-gradient(180deg,#050816 0%,#0b1026 45%,#111827 100%)}
-.screen{position:absolute;inset:0;display:none;z-index:10}
-.screen.active{display:flex}
+:root{
+  --ink:#172033;
+  --blue:#4f46e5;
+  --gold:#facc15;
+}
 
-#cover{align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 15% 18%,#fff 0 2px,transparent 3px),radial-gradient(circle at 30% 70%,#fff 0 2px,transparent 3px),radial-gradient(circle at 78% 15%,#c4b5fd 0 3px,transparent 4px),radial-gradient(circle at 88% 52%,#fff 0 2px,transparent 3px),linear-gradient(180deg,#071226,#101935,#1f1147)}
-.cover-card{width:min(900px,96vw);background:linear-gradient(180deg,#fff,#eef2ff);border:5px solid var(--blue);border-radius:30px;padding:22px;text-align:center;box-shadow:0 10px 0 #312e81,0 18px 28px #0006}
-h1{margin:0;font-size:clamp(2rem,6vw,4rem);color:var(--blue);text-shadow:3px 3px 0 var(--gold)}
-.subtitle{font-size:clamp(1rem,3vw,1.35rem);font-weight:bold;margin:8px 0 12px}
-.cover-ship{width:130px;height:95px;margin:4px auto 8px;position:relative}
-.cover-ship::before{content:"";position:absolute;left:42px;top:8px;width:46px;height:75px;background:linear-gradient(180deg,#fde68a,#60a5fa,#8b5cf6);border:5px solid #1e3a8a;border-radius:50% 50% 24px 24px;clip-path:polygon(50% 0,82% 20%,94% 70%,68% 100%,50% 88%,32% 100%,6% 70%,18% 20%);box-shadow:0 0 14px #67e8f9}
-.cover-ship::after{content:"★";position:absolute;left:51px;top:30px;width:28px;height:28px;display:grid;place-items:center;color:#fff;background:#f59e0b;border:3px solid #92400e;border-radius:50%;font-size:17px}
-.level-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}
-.level-mini{background:#eff6ff;border:2px solid #4f46e5;border-radius:12px;padding:5px;font-weight:bold;font-size:.82rem}
-.cover-card p{margin:5px 0;font-weight:bold}
-.btn-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px}
-button,a.button{border:0;border-radius:18px;padding:12px 16px;font-family:inherit;font-size:1rem;font-weight:bold;cursor:pointer;color:#172033;text-decoration:none;background:linear-gradient(#fff176,#facc15);box-shadow:0 6px 0 #a16207}
-button:active,a.button:active{transform:translateY(4px);box-shadow:0 2px 0 #a16207}
-button:disabled{opacity:.55;filter:grayscale(.5);cursor:not-allowed}
-.secondary{background:linear-gradient(#dbeafe,#60a5fa);box-shadow:0 6px 0 #1d4ed8}
-.success{background:linear-gradient(#bbf7d0,#4ade80);box-shadow:0 6px 0 #15803d}
-.danger{background:linear-gradient(#fecaca,#ef4444);box-shadow:0 6px 0 #991b1b;color:#fff}
-#saveInfo{margin-top:6px;font-size:.9rem;color:#312e81;font-weight:bold}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
 
-#game{position:absolute;inset:0;overflow:hidden}
-#gameArea{position:absolute;inset:0;overflow:hidden;z-index:1}
-.cloud{position:absolute;width:4px;height:4px;background:#ffffffdd;border-radius:50%;box-shadow:0 0 8px #fff;animation:cloudMove linear infinite}
-.cloud::before,.cloud::after{content:"";position:absolute;border-radius:50%;background:#ffffffcc}
-.cloud::before{width:2px;height:2px;left:10px;top:16px}.cloud::after{width:3px;height:3px;left:-8px;top:12px}
-@keyframes cloudMove{from{transform:translateY(-160px)}to{transform:translateY(115vh)}}
+html,body,#app,#game,#gameArea,button,a{
+  touch-action:none;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
 
-#hud{position:absolute;top:8px;left:8px;right:8px;z-index:8;display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start;pointer-events:none}
-.hud-card{background:#ffffffdd;border:3px solid #4f46e5;border-radius:18px;padding:7px 9px;font-weight:bold;box-shadow:0 4px 0 #312e81}
-#questionBox{text-align:center;font-size:clamp(1.2rem,4vw,2rem);background:#fff7cc;border-color:#b45309;box-shadow:0 4px 0 #92400e}
-#scoreBox{text-align:left}#livesBox{text-align:right}
+html,body{
+  margin:0;
+  width:100%;
+  height:100dvh;
+  min-height:100dvh;
+  overflow:hidden;
+  font-family:"Comic Sans MS","Comic Neue","Trebuchet MS",sans-serif;
+  background:#050816;
+  color:var(--ink);
+}
 
-#player{position:absolute;width:66px;height:80px;left:50%;top:70%;transform:translateX(-50%);z-index:5;pointer-events:none}
-.ship-body{position:absolute;left:18px;top:2px;width:30px;height:68px;background:linear-gradient(180deg,#dbeafe,#60a5fa);border:4px solid #1e3a8a;border-radius:50% 50% 16px 16px;clip-path:polygon(50% 0,80% 16%,92% 68%,68% 100%,50% 88%,32% 100%,8% 68%,20% 16%)}
-.ship-wing{position:absolute;top:36px;width:28px;height:18px;background:linear-gradient(90deg,#c4b5fd,#22d3ee);border:3px solid #312e81;border-radius:999px;box-shadow:0 0 8px #67e8f9}
-.ship-wing.left{left:0;transform:rotate(-12deg)}.ship-wing.right{right:0;transform:rotate(12deg)}
-.ship-cockpit{position:absolute;left:24px;top:18px;width:18px;height:18px;border-radius:50%;background:#a5f3fc;border:2px solid #0f172a}
-.front-cannon,.right-cannon,.left-cannon,.back-cannon{position:absolute;background:#111827;border:2px solid #facc15;border-radius:999px;display:none;box-shadow:0 0 8px #facc15}
-.front-cannon{left:28px;top:-5px;width:10px;height:18px}.right-cannon{right:-7px;top:40px;width:18px;height:9px}.left-cannon{left:-7px;top:40px;width:18px;height:9px}.back-cannon{left:28px;top:64px;width:10px;height:18px}
-.engine-flame{position:absolute;left:25px;top:72px;width:16px;height:22px;background:linear-gradient(180deg,#fde68a,#fb923c,#ef4444);border-radius:50%;filter:blur(.2px);opacity:.8;animation:flame .25s infinite alternate}
-@keyframes flame{from{transform:scaleY(.85);opacity:.65}to{transform:scaleY(1.2);opacity:1}}
-.star-core{position:absolute;left:22px;top:33px;width:22px;height:22px;display:none;place-items:center;background:#f59e0b;color:#fff;border:3px solid #92400e;border-radius:50%;font-size:14px;font-weight:bold;box-shadow:0 0 14px #facc15}
+#app{
+  position:relative;
+  width:100vw;
+  height:100dvh;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 12% 18%,#fff 0 1px,transparent 2px),
+    radial-gradient(circle at 26% 62%,#fff 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 74% 14%,#fff 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 88% 42%,#fff 0 1px,transparent 2px),
+    radial-gradient(circle at 64% 78%,#c4b5fd 0 1.5px,transparent 3px),
+    radial-gradient(circle at 38% 32%,#93c5fd 0 1px,transparent 2px),
+    linear-gradient(180deg,#050816 0%,#0b1026 45%,#111827 100%);
+}
 
-#player.ship-lv1 .ship-body{background:linear-gradient(180deg,#dbeafe,#60a5fa)}
+.screen{
+  position:absolute;
+  inset:0;
+  display:none;
+  z-index:10;
+}
+
+.screen.active{
+  display:flex;
+}
+
+/* COVER */
+#cover{
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:
+    radial-gradient(circle at 15% 18%,#fff 0 2px,transparent 3px),
+    radial-gradient(circle at 30% 70%,#fff 0 2px,transparent 3px),
+    radial-gradient(circle at 78% 15%,#c4b5fd 0 3px,transparent 4px),
+    radial-gradient(circle at 88% 52%,#fff 0 2px,transparent 3px),
+    linear-gradient(180deg,#071226,#101935,#1f1147);
+}
+
+.cover-card{
+  width:min(900px,96vw);
+  background:linear-gradient(180deg,#fff,#eef2ff);
+  border:5px solid var(--blue);
+  border-radius:30px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 10px 0 #312e81,0 18px 28px #0006;
+}
+
+h1{
+  margin:0;
+  font-size:clamp(2rem,6vw,4rem);
+  color:var(--blue);
+  text-shadow:3px 3px 0 var(--gold);
+}
+
+.subtitle{
+  font-size:clamp(1rem,3vw,1.3rem);
+  font-weight:bold;
+  margin:8px 0 10px;
+}
+
+.cover-ship{
+  width:120px;
+  height:82px;
+  margin:4px auto 7px;
+  position:relative;
+}
+
+.cover-ship::before{
+  content:"";
+  position:absolute;
+  left:38px;
+  top:5px;
+  width:44px;
+  height:72px;
+  background:linear-gradient(180deg,#fde68a,#60a5fa,#8b5cf6);
+  border:5px solid #1e3a8a;
+  border-radius:50% 50% 24px 24px;
+  clip-path:polygon(50% 0,82% 20%,94% 70%,68% 100%,50% 88%,32% 100%,6% 70%,18% 20%);
+  box-shadow:0 0 14px #67e8f9;
+}
+
+.cover-ship::after{
+  content:"★";
+  position:absolute;
+  left:47px;
+  top:28px;
+  width:26px;
+  height:26px;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  background:#f59e0b;
+  border:3px solid #92400e;
+  border-radius:50%;
+  font-size:16px;
+}
+
+.level-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  margin:8px 0;
+}
+
+.level-mini{
+  background:#eff6ff;
+  border:2px solid #4f46e5;
+  border-radius:12px;
+  padding:5px;
+  font-weight:bold;
+  font-size:.8rem;
+}
+
+.cover-card p{
+  margin:4px 0;
+  font-weight:bold;
+}
+
+.btn-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:9px;
+  margin-top:10px;
+}
+
+button,a.button{
+  border:0;
+  border-radius:18px;
+  padding:11px 15px;
+  font-family:inherit;
+  font-size:.98rem;
+  font-weight:bold;
+  cursor:pointer;
+  color:#172033;
+  text-decoration:none;
+  background:linear-gradient(#fff176,#facc15);
+  box-shadow:0 6px 0 #a16207;
+}
+
+button:active,a.button:active{
+  transform:translateY(4px);
+  box-shadow:0 2px 0 #a16207;
+}
+
+button:disabled{
+  opacity:.5;
+  filter:grayscale(.5);
+  cursor:not-allowed;
+}
+
+.secondary{
+  background:linear-gradient(#dbeafe,#60a5fa);
+  box-shadow:0 6px 0 #1d4ed8;
+}
+
+.success{
+  background:linear-gradient(#bbf7d0,#4ade80);
+  box-shadow:0 6px 0 #15803d;
+}
+
+.danger{
+  background:linear-gradient(#fecaca,#ef4444);
+  box-shadow:0 6px 0 #991b1b;
+  color:#fff;
+}
+
+#saveInfo{
+  margin-top:6px;
+  font-size:.86rem;
+  color:#312e81;
+  font-weight:bold;
+}
+
+/* GAME */
+#game{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+}
+
+#gameArea{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  z-index:1;
+}
+
+.cloud{
+  position:absolute;
+  width:4px;
+  height:4px;
+  background:#ffffffdd;
+  border-radius:50%;
+  box-shadow:0 0 8px #fff;
+  animation:cloudMove linear infinite;
+}
+
+.cloud::before,.cloud::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  background:#ffffffcc;
+}
+
+.cloud::before{
+  width:2px;
+  height:2px;
+  left:10px;
+  top:16px;
+}
+
+.cloud::after{
+  width:3px;
+  height:3px;
+  left:-8px;
+  top:12px;
+}
+
+@keyframes cloudMove{
+  from{transform:translateY(-160px)}
+  to{transform:translateY(115vh)}
+}
+
+/* HUD */
+#hud{
+  position:absolute;
+  top:8px;
+  left:8px;
+  right:8px;
+  z-index:8;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:8px;
+  align-items:start;
+  pointer-events:none;
+}
+
+.hud-card{
+  background:#ffffffdd;
+  border:3px solid #4f46e5;
+  border-radius:18px;
+  padding:7px 9px;
+  font-weight:bold;
+  box-shadow:0 4px 0 #312e81;
+}
+
+#questionBox{
+  text-align:center;
+  font-size:clamp(1.2rem,4vw,2rem);
+  background:#fff7cc;
+  border-color:#b45309;
+  box-shadow:0 4px 0 #92400e;
+}
+
+#scoreBox{text-align:left}
+#livesBox{text-align:right}
+
+.weaponLine{
+  color:#7c2d12;
+  background:#fef3c7;
+  border:2px solid #f59e0b;
+  border-radius:10px;
+  padding:2px 5px;
+  margin-top:3px;
+  display:inline-block;
+}
+
+/* PLAYER SHIP */
+#player{
+  position:absolute;
+  width:66px;
+  height:82px;
+  left:50%;
+  top:70%;
+  transform:translateX(-50%);
+  z-index:5;
+  pointer-events:none;
+}
+
+.ship-body{
+  position:absolute;
+  left:18px;
+  top:2px;
+  width:30px;
+  height:68px;
+  background:linear-gradient(180deg,#dbeafe,#60a5fa);
+  border:4px solid #1e3a8a;
+  border-radius:50% 50% 16px 16px;
+  clip-path:polygon(50% 0,80% 16%,92% 68%,68% 100%,50% 88%,32% 100%,8% 68%,20% 16%);
+}
+
+.ship-wing{
+  position:absolute;
+  top:36px;
+  width:28px;
+  height:18px;
+  background:linear-gradient(90deg,#c4b5fd,#22d3ee);
+  border:3px solid #312e81;
+  border-radius:999px;
+  box-shadow:0 0 8px #67e8f9;
+}
+
+.ship-wing.left{left:0;transform:rotate(-12deg)}
+.ship-wing.right{right:0;transform:rotate(12deg)}
+
+.ship-cockpit{
+  position:absolute;
+  left:24px;
+  top:18px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#a5f3fc;
+  border:2px solid #0f172a;
+}
+
+.front-cannon,.right-cannon,.left-cannon,.back-cannon{
+  position:absolute;
+  background:#111827;
+  border:2px solid #facc15;
+  border-radius:999px;
+  display:none;
+  box-shadow:0 0 8px #facc15;
+}
+
+.front-cannon{
+  left:28px;
+  top:-5px;
+  width:10px;
+  height:18px;
+}
+
+.right-cannon{
+  right:-7px;
+  top:40px;
+  width:18px;
+  height:9px;
+}
+
+.left-cannon{
+  left:-7px;
+  top:40px;
+  width:18px;
+  height:9px;
+}
+
+.back-cannon{
+  left:28px;
+  top:66px;
+  width:10px;
+  height:18px;
+}
+
+.engine-flame{
+  position:absolute;
+  left:25px;
+  top:72px;
+  width:16px;
+  height:22px;
+  background:linear-gradient(180deg,#fde68a,#fb923c,#ef4444);
+  border-radius:50%;
+  filter:blur(.2px);
+  opacity:.8;
+  animation:flame .25s infinite alternate;
+}
+
+@keyframes flame{
+  from{transform:scaleY(.85);opacity:.65}
+  to{transform:scaleY(1.2);opacity:1}
+}
+
+.star-core{
+  position:absolute;
+  left:22px;
+  top:33px;
+  width:22px;
+  height:22px;
+  display:none;
+  place-items:center;
+  background:#f59e0b;
+  color:#fff;
+  border:3px solid #92400e;
+  border-radius:50%;
+  font-size:14px;
+  font-weight:bold;
+  box-shadow:0 0 14px #facc15;
+}
+
+.laser-crystal{
+  position:absolute;
+  display:none;
+  background:#67e8f9;
+  border:2px solid #0e7490;
+  box-shadow:0 0 10px #22d3ee;
+}
+
+.front-crystal{
+  left:25px;
+  top:-11px;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+}
+
+.right-crystal{
+  right:-13px;
+  top:36px;
+  width:15px;
+  height:15px;
+  border-radius:50%;
+}
+
+.left-crystal{
+  left:-13px;
+  top:36px;
+  width:15px;
+  height:15px;
+  border-radius:50%;
+}
+
+/* Ship progression */
+#player.ship-lv1 .front-cannon{display:block}
+#player.ship-lv2 .front-cannon{display:block}
 #player.ship-lv2 .ship-cockpit{box-shadow:0 0 12px #67e8f9;background:#cffafe}
-#player.ship-lv3 .front-cannon{display:block}
-#player.ship-lv4 .front-cannon,#player.ship-lv4 .right-cannon{display:block}
-#player.ship-lv5 .front-cannon,#player.ship-lv5 .right-cannon,#player.ship-lv5 .left-cannon{display:block}
-#player.ship-lv6 .front-cannon,#player.ship-lv6 .right-cannon,#player.ship-lv6 .left-cannon,#player.ship-lv6 .back-cannon{display:block}
-#player.ship-lv7 .ship-body,#player.ship-lv8 .ship-body,#player.ship-lv9 .ship-body{background:linear-gradient(180deg,#dcfce7,#22c55e)}
-#player.ship-lv7 .ship-wing,#player.ship-lv8 .ship-wing,#player.ship-lv9 .ship-wing{width:33px;background:linear-gradient(90deg,#bbf7d0,#22d3ee)}
-#player.ship-lv8 .ship-body,#player.ship-lv9 .ship-body{border-color:#92400e;box-shadow:0 0 12px #facc15}
-#player.ship-lv9 .engine-flame{height:30px;background:linear-gradient(180deg,#fff,#fde68a,#fb923c,#ef4444);box-shadow:0 0 14px #fb923c}
-#player.ship-lv10 .ship-body,#player.ship-lv11 .ship-body,#player.ship-lv12 .ship-body{background:linear-gradient(180deg,#ddd6fe,#8b5cf6);box-shadow:0 0 16px #a78bfa}
-#player.ship-lv10 .front-cannon,#player.ship-lv11 .front-cannon,#player.ship-lv12 .front-cannon{display:block;background:#67e8f9;border-color:#0e7490}
-#player.ship-lv11 .right-cannon,#player.ship-lv11 .left-cannon,#player.ship-lv12 .right-cannon,#player.ship-lv12 .left-cannon{display:block;background:#67e8f9;border-color:#0e7490}
-#player.ship-lv12 .back-cannon{display:block;background:#67e8f9;border-color:#0e7490}
-#player.ship-lv13 .ship-body{background:linear-gradient(180deg,#fef3c7,#facc15,#8b5cf6);border-color:#92400e;box-shadow:0 0 22px #facc15}
-#player.ship-lv13 .ship-wing{width:35px;background:linear-gradient(90deg,#facc15,#22d3ee,#facc15);border-color:#92400e}
-#player.ship-lv13 .front-cannon,#player.ship-lv13 .right-cannon,#player.ship-lv13 .left-cannon,#player.ship-lv13 .back-cannon{display:block;background:#f59e0b;border-color:#fff7cc}
-#player.ship-lv13 .star-core{display:grid}
-#player.shielded::before{content:"";position:absolute;left:-16px;top:-14px;width:98px;height:106px;border:5px solid #67e8f9;border-radius:50%;box-shadow:0 0 18px #22d3ee,inset 0 0 18px #67e8f9;background:radial-gradient(circle,rgba(103,232,249,.12),rgba(34,211,238,.04),transparent);animation:shieldPulse .7s ease-in-out infinite alternate;pointer-events:none}
-@keyframes shieldPulse{from{transform:scale(.95);opacity:.65}to{transform:scale(1.08);opacity:1}}
+#player.ship-lv3 .front-cannon{display:block;width:14px;left:26px}
+#player.ship-lv3 .ship-body{box-shadow:0 0 10px #60a5fa}
 
-.enemy{position:absolute;width:78px;height:62px;z-index:3}
-.enemy .eBody{position:absolute;left:20px;top:14px;width:36px;height:24px;background:linear-gradient(180deg,#86efac,#22c55e);border:4px solid #14532d;border-radius:50% 50% 40% 40%;box-shadow:0 0 10px #86efac}
-.enemy .eWing{position:absolute;top:24px;width:24px;height:14px;background:linear-gradient(90deg,#fca5a5,#ef4444);border:3px solid #7f1d1d;border-radius:999px}
-.enemy .eWing.left{left:4px}.enemy .eWing.right{right:4px}
-.answerTag{position:absolute;left:50%;top:-18px;transform:translateX(-50%);min-width:56px;text-align:center;background:#fff;border:4px solid #111827;border-radius:14px;padding:4px 8px;font-size:1.2rem;font-weight:bold;box-shadow:0 3px 0 #111827}
-.enemy.cheatTarget .answerTag{background:#fef08a;border-color:#dc2626;color:#dc2626;transform:translateX(-50%) scale(1.25);box-shadow:0 0 18px #facc15,0 3px 0 #7f1d1d}
+#player.ship-lv4 .front-cannon,
+#player.ship-lv4 .right-cannon{display:block}
 
-.bullet{position:absolute;width:10px;height:24px;background:#fef08a;border:2px solid #ca8a04;border-radius:999px;z-index:6}
-.bigBullet{width:14px;height:30px;background:#bbf7d0;border-color:#15803d;box-shadow:0 0 10px #22c55e}
-.sideBullet{width:24px;height:10px}.backBullet{width:10px;height:24px}
-.starBullet{width:26px;height:26px;background:#facc15;border:3px solid #92400e;border-radius:50%;box-shadow:0 0 18px #facc15;display:grid;place-items:center;color:#fff;font-size:18px}
-.starBullet::before{content:"★";position:absolute}
-.cheatBullet{width:18px;height:18px;background:#facc15;border:3px solid #92400e;box-shadow:0 0 18px #facc15}
-.laserBeam{position:absolute;width:24px;background:linear-gradient(90deg,transparent,#67e8f9,#fff,#67e8f9,transparent);border-left:3px solid #0891b2;border-right:3px solid #0891b2;box-shadow:0 0 18px #22d3ee;z-index:6;border-radius:999px;animation:laserFlash .14s linear forwards}
-.sideLaserBeam{position:absolute;height:24px;background:linear-gradient(180deg,transparent,#67e8f9,#fff,#67e8f9,transparent);border-top:3px solid #0891b2;border-bottom:3px solid #0891b2;box-shadow:0 0 18px #22d3ee;z-index:6;border-radius:999px;animation:laserFlash .14s linear forwards}
-@keyframes laserFlash{from{opacity:1;transform:scaleX(1)}to{opacity:0;transform:scaleX(1.6)}}
-.enemyBullet{position:absolute;width:14px;height:22px;background:#ff4d4d;border:3px solid #7f1d1d;border-radius:999px;z-index:6;box-shadow:0 0 10px #ff8080}
-.spark{position:absolute;width:22px;height:22px;background:radial-gradient(circle,#fff 0 20%,#facc15 25% 45%,#fb923c 50% 70%,transparent 72%);border-radius:50%;z-index:7;animation:pop .35s linear forwards}
-@keyframes pop{from{transform:scale(.6);opacity:1}to{transform:scale(2.2);opacity:0}}
+#player.ship-lv5 .front-cannon,
+#player.ship-lv5 .right-cannon,
+#player.ship-lv5 .left-cannon{display:block}
 
-#controls{position:absolute;left:0;right:0;bottom:calc(82px + env(safe-area-inset-bottom));z-index:80;display:flex;justify-content:space-between;align-items:end;padding:0 14px;pointer-events:none}
-.dpad{display:grid;grid-template-columns:64px 64px 64px;grid-template-rows:56px 56px;gap:7px;pointer-events:auto}
-.ctrl{width:64px;height:56px;border-radius:18px;font-size:1.45rem;padding:0;background:linear-gradient(#e0f2fe,#60a5fa);box-shadow:0 5px 0 #1d4ed8;position:relative;z-index:90}
-.ctrl.blank{opacity:0;pointer-events:none}.ctrl.centre{background:linear-gradient(#dbeafe,#93c5fd)}
-.weapon-stack{display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:auto}
-.weapon-buttons{display:grid;grid-template-columns:56px 70px 56px;grid-template-rows:50px 60px;gap:5px;justify-items:center;align-items:center}
-.shoot{width:70px;height:60px;border-radius:20px;font-size:1.65rem;background:linear-gradient(#fecaca,#fb7185);box-shadow:0 5px 0 #be123c;grid-column:2;grid-row:1 / span 2}
-.side-shoot{width:56px;height:50px;border-radius:18px;font-size:1.1rem;background:linear-gradient(#dbeafe,#60a5fa);box-shadow:0 5px 0 #1d4ed8}
-#backShootBtn{grid-column:2;grid-row:2;align-self:end;margin-top:45px}
-.cheat-shoot{width:180px;height:38px;border-radius:16px;font-size:.86rem;background:linear-gradient(#fde68a,#f97316);box-shadow:0 5px 0 #9a3412}
-.cheat-shoot.used{opacity:.55;filter:grayscale(.4)}
+#player.ship-lv6 .front-cannon,
+#player.ship-lv6 .right-cannon,
+#player.ship-lv6 .left-cannon,
+#player.ship-lv6 .back-cannon{display:block}
 
-#cheatAnswerBadge,#shieldBadge{position:absolute;left:50%;transform:translateX(-50%);z-index:95;display:none;border-radius:20px;font-weight:900;pointer-events:none}
-#cheatAnswerBadge{top:92px;background:#fff7cc;border:4px solid #dc2626;padding:10px 18px;font-size:clamp(1.1rem,4vw,2rem);color:#dc2626;box-shadow:0 6px 0 #7f1d1d,0 0 18px #facc15}
-#shieldBadge{top:150px;background:#ecfeff;border:4px solid #0891b2;padding:8px 16px;font-size:clamp(1rem,3.5vw,1.5rem);color:#0e7490;box-shadow:0 6px 0 #155e75,0 0 18px #67e8f9}
+#player.ship-lv7 .front-crystal,
+#player.ship-lv8 .front-crystal,
+#player.ship-lv9 .front-crystal,
+#player.ship-lv10 .front-crystal,
+#player.ship-lv11 .front-crystal,
+#player.ship-lv12 .front-crystal,
+#player.ship-lv13 .front-crystal{display:block}
 
-#message{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:100;width:min(780px,92vw);background:#ffffffee;border:5px solid #4f46e5;border-radius:28px;padding:20px;text-align:center;box-shadow:0 10px 0 #312e81,0 18px 28px #0007;display:none;max-height:90dvh;overflow:auto}
-#message h2{margin:0 0 8px;font-size:clamp(1.7rem,6vw,3rem);color:#4f46e5}
-#message p{font-weight:bold;font-size:1.05rem}
-.promotion-card{background:linear-gradient(180deg,#fff7cc,#facc15);border:6px solid #92400e;border-radius:28px;padding:18px;margin:10px 0;box-shadow:0 8px 0 #78350f}
-.promotion-small{font-size:clamp(1rem,3vw,1.5rem);font-weight:bold;color:#7c2d12}
-.promotion-rank{font-size:clamp(2.4rem,10vw,5.5rem);line-height:1;font-weight:900;color:#4f46e5;text-shadow:4px 4px 0 #fff,7px 7px 0 #f97316;margin:10px 0}
-.weapon-note{display:inline-block;padding:8px 14px;margin:8px 0;border-radius:999px;background:#eff6ff;border:3px solid #4f46e5;font-weight:bold;font-size:1rem}
+#player.ship-lv8 .right-crystal,
+#player.ship-lv9 .right-crystal,
+#player.ship-lv10 .right-crystal,
+#player.ship-lv11 .right-crystal,
+#player.ship-lv12 .right-crystal,
+#player.ship-lv13 .right-crystal{display:block}
 
-.land-scene{position:relative;min-height:280px;border:5px solid #312e81;border-radius:28px;background:radial-gradient(circle at 12% 18%,#fff 0 2px,transparent 3px),radial-gradient(circle at 24% 72%,#fff 0 2px,transparent 3px),radial-gradient(circle at 80% 20%,#c4b5fd 0 3px,transparent 4px),radial-gradient(circle at 68% 68%,#93c5fd 0 2px,transparent 3px),linear-gradient(180deg,#050816 0%,#111827 100%);overflow:hidden;margin:10px 0}
-.land-plane{position:absolute;left:50%;top:24px;transform:translateX(-50%);font-size:3rem;animation:landPlane 1s ease-out forwards;z-index:3}
-@keyframes landPlane{from{transform:translate(-50%,-120px) scale(.8)}to{transform:translate(-50%,0) scale(1)}}
-.fact-field{position:absolute;left:10px;right:10px;bottom:18px;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
-.fact-tile{background:#fff7cc;border:3px solid #92400e;border-radius:14px;padding:7px 9px;font-weight:bold;font-size:.86rem;box-shadow:0 4px 0 #78350f;transition:transform .35s ease,opacity .35s ease}
-.fact-tile.blast{transform:scale(0) rotate(360deg);opacity:0}
-.bomb-button{margin-top:12px;background:linear-gradient(#fecaca,#ef4444);box-shadow:0 6px 0 #991b1b;color:#fff;font-size:1.15rem;border:4px solid #7f1d1d}
-.blast-word{font-size:clamp(2rem,8vw,4rem);font-weight:900;color:#dc2626;text-shadow:3px 3px 0 #fff,6px 6px 0 #facc15}
-.credit{position:absolute;right:10px;bottom:4px;z-index:7;font-size:.75rem;font-weight:bold;color:#fff;background:#00000088;padding:3px 8px;border-radius:999px}
-.confetti{position:fixed;top:-20px;width:12px;height:18px;border-radius:4px;z-index:120;animation:fall linear forwards}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.4}}
+#player.ship-lv9 .left-crystal,
+#player.ship-lv10 .left-crystal,
+#player.ship-lv11 .left-crystal,
+#player.ship-lv12 .left-crystal,
+#player.ship-lv13 .left-crystal{display:block}
 
+#player.ship-lv7 .ship-body,
+#player.ship-lv8 .ship-body,
+#player.ship-lv9 .ship-body{
+  background:linear-gradient(180deg,#dcfce7,#22c55e);
+  box-shadow:0 0 14px #22c55e;
+}
+
+#player.ship-lv10 .ship-body,
+#player.ship-lv11 .ship-body,
+#player.ship-lv12 .ship-body,
+#player.ship-lv13 .ship-body{
+  background:linear-gradient(180deg,#fef3c7,#facc15,#8b5cf6);
+  border-color:#92400e;
+  box-shadow:0 0 22px #facc15;
+}
+
+#player.ship-lv10 .star-core,
+#player.ship-lv11 .star-core,
+#player.ship-lv12 .star-core,
+#player.ship-lv13 .star-core{
+  display:grid;
+}
+
+#player.ship-lv11 .right-cannon,
+#player.ship-lv12 .right-cannon,
+#player.ship-lv13 .right-cannon,
+#player.ship-lv12 .left-cannon,
+#player.ship-lv13 .left-cannon,
+#player.ship-lv13 .back-cannon{
+  display:block;
+  background:#f59e0b;
+  border-color:#fff7cc;
+}
+
+#player.shielded::before{
+  content:"";
+  position:absolute;
+  left:-16px;
+  top:-14px;
+  width:98px;
+  height:106px;
+  border:5px solid #67e8f9;
+  border-radius:50%;
+  box-shadow:0 0 18px #22d3ee,inset 0 0 18px #67e8f9;
+  background:radial-gradient(circle,rgba(103,232,249,.12),rgba(34,211,238,.04),transparent);
+  animation:shieldPulse .7s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+
+@keyframes shieldPulse{
+  from{transform:scale(.95);opacity:.65}
+  to{transform:scale(1.08);opacity:1}
+}
+
+/* ENEMY */
+.enemy{
+  position:absolute;
+  width:78px;
+  height:62px;
+  z-index:3;
+}
+
+.enemy .eBody{
+  position:absolute;
+  left:20px;
+  top:14px;
+  width:36px;
+  height:24px;
+  background:linear-gradient(180deg,#86efac,#22c55e);
+  border:4px solid #14532d;
+  border-radius:50% 50% 40% 40%;
+  box-shadow:0 0 10px #86efac;
+}
+
+.enemy .eWing{
+  position:absolute;
+  top:24px;
+  width:24px;
+  height:14px;
+  background:linear-gradient(90deg,#fca5a5,#ef4444);
+  border:3px solid #7f1d1d;
+  border-radius:999px;
+}
+
+.enemy .eWing.left{left:4px}
+.enemy .eWing.right{right:4px}
+
+.answerTag{
+  position:absolute;
+  left:50%;
+  top:-18px;
+  transform:translateX(-50%);
+  min-width:56px;
+  text-align:center;
+  background:#fff;
+  border:4px solid #111827;
+  border-radius:14px;
+  padding:4px 8px;
+  font-size:1.2rem;
+  font-weight:bold;
+  box-shadow:0 3px 0 #111827;
+}
+
+.enemy.cheatTarget .answerTag{
+  background:#fef08a;
+  border-color:#dc2626;
+  color:#dc2626;
+  transform:translateX(-50%) scale(1.25);
+  box-shadow:0 0 18px #facc15,0 3px 0 #7f1d1d;
+}
+
+/* PROJECTILES */
+.bullet{
+  position:absolute;
+  width:10px;
+  height:24px;
+  background:#fef08a;
+  border:2px solid #ca8a04;
+  border-radius:999px;
+  z-index:6;
+}
+
+.sideBullet{
+  width:24px;
+  height:10px;
+}
+
+.backBullet{
+  width:10px;
+  height:24px;
+}
+
+.starBullet{
+  width:26px;
+  height:26px;
+  background:#facc15;
+  border:3px solid #92400e;
+  border-radius:50%;
+  box-shadow:0 0 18px #facc15;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-size:18px;
+}
+
+.starBullet::before{
+  content:"★";
+  position:absolute;
+}
+
+.cheatBullet{
+  width:18px;
+  height:18px;
+  background:#facc15;
+  border:3px solid #92400e;
+  box-shadow:0 0 18px #facc15;
+}
+
+.laserBeam{
+  position:absolute;
+  width:24px;
+  background:linear-gradient(90deg,transparent,#67e8f9,#fff,#67e8f9,transparent);
+  border-left:3px solid #0891b2;
+  border-right:3px solid #0891b2;
+  box-shadow:0 0 18px #22d3ee;
+  z-index:6;
+  border-radius:999px;
+  animation:laserFlash .14s linear forwards;
+}
+
+.sideLaserBeam{
+  position:absolute;
+  height:24px;
+  background:linear-gradient(180deg,transparent,#67e8f9,#fff,#67e8f9,transparent);
+  border-top:3px solid #0891b2;
+  border-bottom:3px solid #0891b2;
+  box-shadow:0 0 18px #22d3ee;
+  z-index:6;
+  border-radius:999px;
+  animation:laserFlash .14s linear forwards;
+}
+
+@keyframes laserFlash{
+  from{opacity:1;transform:scaleX(1)}
+  to{opacity:0;transform:scaleX(1.6)}
+}
+
+.enemyBullet{
+  position:absolute;
+  width:14px;
+  height:22px;
+  background:#ff4d4d;
+  border:3px solid #7f1d1d;
+  border-radius:999px;
+  z-index:6;
+  box-shadow:0 0 10px #ff8080;
+}
+
+.spark{
+  position:absolute;
+  width:22px;
+  height:22px;
+  background:radial-gradient(circle,#fff 0 20%,#facc15 25% 45%,#fb923c 50% 70%,transparent 72%);
+  border-radius:50%;
+  z-index:7;
+  animation:pop .35s linear forwards;
+}
+
+@keyframes pop{
+  from{transform:scale(.6);opacity:1}
+  to{transform:scale(2.2);opacity:0}
+}
+
+/* CONTROLS */
+#controls{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:calc(8px + env(safe-area-inset-bottom));
+  z-index:80;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  padding:0 8px;
+  pointer-events:none;
+}
+
+.dpad{
+  display:grid;
+  grid-template-columns:52px 52px 52px;
+  grid-template-rows:46px 46px;
+  gap:5px;
+  pointer-events:auto;
+}
+
+.ctrl{
+  width:52px;
+  height:46px;
+  border-radius:15px;
+  font-size:1.05rem;
+  padding:0;
+  background:linear-gradient(#e0f2fe,#60a5fa);
+  box-shadow:0 4px 0 #1d4ed8;
+  position:relative;
+  z-index:90;
+}
+
+.ctrl.blank{
+  opacity:0;
+  pointer-events:none;
+}
+
+.ctrl.centre{
+  background:linear-gradient(#dbeafe,#93c5fd);
+}
+
+.weapon-stack{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  pointer-events:auto;
+}
+
+.weapon-buttons{
+  display:grid;
+  grid-template-columns:48px 60px 48px;
+  grid-template-rows:48px 42px;
+  gap:4px;
+  justify-items:center;
+  align-items:center;
+}
+
+.shoot{
+  width:60px;
+  height:92px;
+  border-radius:20px;
+  font-size:1.35rem;
+  background:linear-gradient(#fecaca,#fb7185);
+  box-shadow:0 4px 0 #be123c;
+  grid-column:2;
+  grid-row:1 / span 2;
+}
+
+.side-shoot{
+  width:48px;
+  height:42px;
+  border-radius:15px;
+  font-size:.88rem;
+  background:linear-gradient(#dbeafe,#60a5fa);
+  box-shadow:0 4px 0 #1d4ed8;
+}
+
+#leftShootBtn{grid-column:1;grid-row:1}
+#rightShootBtn{grid-column:3;grid-row:1}
+#backShootBtn{grid-column:2;grid-row:2;width:52px;height:36px;font-size:.82rem}
+
+.cheat-shoot{
+  width:160px;
+  height:34px;
+  border-radius:14px;
+  font-size:.76rem;
+  background:linear-gradient(#fde68a,#f97316);
+  box-shadow:0 4px 0 #9a3412;
+}
+
+.cheat-shoot.used{
+  opacity:.55;
+  filter:grayscale(.4);
+}
+
+/* BADGES */
+#cheatAnswerBadge,#shieldBadge{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:95;
+  display:none;
+  border-radius:18px;
+  font-weight:900;
+  pointer-events:none;
+}
+
+#cheatAnswerBadge{
+  top:92px;
+  background:#fff7cc;
+  border:4px solid #dc2626;
+  padding:9px 16px;
+  font-size:clamp(1rem,4vw,1.8rem);
+  color:#dc2626;
+  box-shadow:0 6px 0 #7f1d1d,0 0 18px #facc15;
+}
+
+#shieldBadge{
+  top:146px;
+  background:#ecfeff;
+  border:4px solid #0891b2;
+  padding:7px 14px;
+  font-size:clamp(.95rem,3.5vw,1.35rem);
+  color:#0e7490;
+  box-shadow:0 6px 0 #155e75,0 0 18px #67e8f9;
+}
+
+/* MESSAGE */
+#message{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:100;
+  width:min(780px,92vw);
+  background:#ffffffee;
+  border:5px solid #4f46e5;
+  border-radius:28px;
+  padding:18px;
+  text-align:center;
+  box-shadow:0 10px 0 #312e81,0 18px 28px #0007;
+  display:none;
+  max-height:90dvh;
+  overflow:auto;
+}
+
+#message h2{
+  margin:0 0 8px;
+  font-size:clamp(1.6rem,6vw,2.8rem);
+  color:#4f46e5;
+}
+
+#message p{
+  font-weight:bold;
+  font-size:1rem;
+}
+
+.promotion-card{
+  background:linear-gradient(180deg,#fff7cc,#facc15);
+  border:6px solid #92400e;
+  border-radius:28px;
+  padding:16px;
+  margin:10px 0;
+  box-shadow:0 8px 0 #78350f;
+}
+
+.promotion-small{
+  font-size:clamp(1rem,3vw,1.4rem);
+  font-weight:bold;
+  color:#7c2d12;
+}
+
+.promotion-rank{
+  font-size:clamp(2.2rem,10vw,5rem);
+  line-height:1;
+  font-weight:900;
+  color:#4f46e5;
+  text-shadow:4px 4px 0 #fff,7px 7px 0 #f97316;
+  margin:10px 0;
+}
+
+.weapon-note{
+  display:inline-block;
+  padding:8px 14px;
+  margin:8px 0;
+  border-radius:999px;
+  background:#eff6ff;
+  border:3px solid #4f46e5;
+  font-weight:bold;
+  font-size:.98rem;
+}
+
+/* FACT LANDING */
+.land-scene{
+  position:relative;
+  min-height:260px;
+  border:5px solid #312e81;
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 12% 18%,#fff 0 2px,transparent 3px),
+    radial-gradient(circle at 24% 72%,#fff 0 2px,transparent 3px),
+    radial-gradient(circle at 80% 20%,#c4b5fd 0 3px,transparent 4px),
+    radial-gradient(circle at 68% 68%,#93c5fd 0 2px,transparent 3px),
+    linear-gradient(180deg,#050816 0%,#111827 100%);
+  overflow:hidden;
+  margin:10px 0;
+}
+
+.land-plane{
+  position:absolute;
+  left:50%;
+  top:24px;
+  transform:translateX(-50%);
+  font-size:3rem;
+  animation:landPlane 1s ease-out forwards;
+  z-index:3;
+}
+
+@keyframes landPlane{
+  from{transform:translate(-50%,-120px) scale(.8)}
+  to{transform:translate(-50%,0) scale(1)}
+}
+
+.fact-field{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:18px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:6px;
+}
+
+.fact-tile{
+  background:#fff7cc;
+  border:3px solid #92400e;
+  border-radius:14px;
+  padding:7px 9px;
+  font-weight:bold;
+  font-size:.84rem;
+  box-shadow:0 4px 0 #78350f;
+  transition:transform .35s ease,opacity .35s ease;
+}
+
+.fact-tile.blast{
+  transform:scale(0) rotate(360deg);
+  opacity:0;
+}
+
+.bomb-button{
+  margin-top:12px;
+  background:linear-gradient(#fecaca,#ef4444);
+  box-shadow:0 6px 0 #991b1b;
+  color:#fff;
+  font-size:1.1rem;
+  border:4px solid #7f1d1d;
+}
+
+.blast-word{
+  font-size:clamp(2rem,8vw,4rem);
+  font-weight:900;
+  color:#dc2626;
+  text-shadow:3px 3px 0 #fff,6px 6px 0 #facc15;
+}
+
+.credit{
+  position:absolute;
+  right:10px;
+  bottom:4px;
+  z-index:7;
+  font-size:.75rem;
+  font-weight:bold;
+  color:#fff;
+  background:#00000088;
+  padding:3px 8px;
+  border-radius:999px;
+}
+
+.confetti{
+  position:fixed;
+  top:-20px;
+  width:12px;
+  height:18px;
+  border-radius:4px;
+  z-index:120;
+  animation:fall linear forwards;
+}
+
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(720deg);opacity:.4}
+}
+
+/* MOBILE */
 @media(max-width:760px){
-  #cover{align-items:flex-start;justify-content:center;padding:6px 8px;overflow:hidden}
-  .cover-card{width:96vw;max-height:98dvh;padding:9px 10px;border-width:4px;border-radius:22px;overflow:hidden}
-  .cover-card h1{font-size:clamp(1.45rem,7vw,2rem);line-height:1;margin-bottom:3px}
-  .subtitle{font-size:.82rem;margin:3px 0 5px}
-  .cover-ship{width:70px;height:45px;margin:2px auto 4px}
-  .cover-ship::before{left:22px;top:2px;width:26px;height:41px;border-width:3px}
-  .cover-ship::after{left:28px;top:15px;width:15px;height:15px;border-width:2px;font-size:10px}
-  .level-grid{grid-template-columns:repeat(2,1fr);gap:3px;margin:4px 0}
-  .level-mini{padding:3px 4px;font-size:.61rem;line-height:1.05;border-width:2px;border-radius:9px}
-  .cover-card p{font-size:.68rem;line-height:1.1;margin:2px 0}
-  .cover-card .btn-row{margin-top:5px;gap:5px}
-  .cover-card button,.cover-card a.button{padding:7px 8px;font-size:.72rem;border-radius:11px;box-shadow:0 3px 0 #a16207}
-  .cover-card .secondary{box-shadow:0 3px 0 #1d4ed8}
-  #saveInfo{font-size:.66rem;margin-top:3px}
+  #cover{
+    align-items:flex-start;
+    justify-content:center;
+    padding:6px 8px;
+    overflow:hidden;
+  }
 
-  #hud{top:4px;left:4px;right:4px;gap:4px;grid-template-columns:1fr 1fr}
-  #questionBox{grid-column:1/3;order:-1;font-size:1rem;padding:5px 6px;border-width:2px;border-radius:12px}
-  .hud-card{font-size:.68rem;line-height:1.15;padding:5px 6px;border-width:2px;border-radius:12px;box-shadow:0 2px 0 #312e81}
-  #controls{bottom:calc(6px + env(safe-area-inset-bottom));padding:0 5px}
-  .dpad{grid-template-columns:45px 45px 45px;grid-template-rows:40px 40px;gap:4px}
-  .ctrl{width:45px;height:40px;font-size:.95rem;border-radius:13px;box-shadow:0 3px 0 #1d4ed8}
-  .weapon-stack{gap:3px}
-  .weapon-buttons{grid-template-columns:42px 54px 42px;grid-template-rows:38px 46px;gap:3px}
-  .shoot{width:54px;height:46px;font-size:1.25rem;border-radius:16px}
-  .side-shoot{width:42px;height:38px;font-size:.85rem}
-  .cheat-shoot{width:130px;height:30px;font-size:.68rem;border-radius:13px}
-  #backShootBtn{margin-top:35px}
+  .cover-card{
+    width:96vw;
+    max-height:98dvh;
+    padding:9px 10px;
+    border-width:4px;
+    border-radius:22px;
+    overflow:hidden;
+  }
 
-  #player{width:52px;height:62px}.ship-body{left:15px;width:24px;height:56px}.ship-wing{top:30px;width:23px;height:15px}.ship-cockpit{left:20px;top:16px;width:14px;height:15px}
-  .front-cannon{left:22px;width:9px;height:15px}.right-cannon{right:-5px;width:15px;height:8px}.left-cannon{left:-5px;width:15px;height:8px}.back-cannon{left:22px;top:55px;width:9px;height:15px}
-  .engine-flame{left:20px;top:59px;width:14px;height:18px}.star-core{left:17px;top:28px;width:19px;height:19px;font-size:11px}
-  #player.shielded::before{left:-13px;top:-12px;width:78px;height:86px;border-width:4px}
+  .cover-card h1{
+    font-size:clamp(1.42rem,7vw,2rem);
+    line-height:1;
+    margin-bottom:3px;
+  }
 
-  .enemy{width:62px;height:50px}.enemy .eBody{left:16px;top:13px;width:30px;height:21px;border-width:3px}.enemy .eWing{top:23px;width:20px;height:12px;border-width:2px}
-  .answerTag{top:-15px;min-width:42px;font-size:.82rem;padding:2px 5px;border-width:3px;border-radius:10px}
-  #cheatAnswerBadge{top:82px;font-size:.82rem;padding:5px 8px;border-width:3px}
-  #shieldBadge{top:118px;font-size:.75rem;padding:5px 8px;border-width:3px}
-  #message{width:94vw;max-height:82dvh;padding:12px;border-radius:20px;overflow:auto}
-  #message h2{font-size:1.3rem}#message p{font-size:.88rem;margin:6px 0}
-  .promotion-card{padding:10px;border-width:4px}.promotion-rank{font-size:2rem}
-  .land-scene{min-height:205px}.fact-tile{font-size:.66rem;padding:4px 5px}
-  .credit{display:none}
+  .subtitle{
+    font-size:.78rem;
+    margin:3px 0 5px;
+  }
+
+  .cover-ship{
+    width:64px;
+    height:40px;
+    margin:2px auto 3px;
+  }
+
+  .cover-ship::before{
+    left:20px;
+    top:2px;
+    width:24px;
+    height:37px;
+    border-width:3px;
+  }
+
+  .cover-ship::after{
+    left:25px;
+    top:14px;
+    width:14px;
+    height:14px;
+    border-width:2px;
+    font-size:9px;
+  }
+
+  .level-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:3px;
+    margin:4px 0;
+  }
+
+  .level-mini{
+    padding:3px 4px;
+    font-size:.58rem;
+    line-height:1.05;
+    border-width:2px;
+    border-radius:9px;
+  }
+
+  .cover-card p{
+    font-size:.65rem;
+    line-height:1.1;
+    margin:2px 0;
+  }
+
+  .cover-card .btn-row{
+    margin-top:5px;
+    gap:5px;
+  }
+
+  .cover-card button,
+  .cover-card a.button{
+    padding:7px 8px;
+    font-size:.7rem;
+    border-radius:11px;
+    box-shadow:0 3px 0 #a16207;
+  }
+
+  .cover-card .secondary{
+    box-shadow:0 3px 0 #1d4ed8;
+  }
+
+  #saveInfo{
+    font-size:.64rem;
+    margin-top:3px;
+  }
+
+  #hud{
+    top:4px;
+    left:4px;
+    right:4px;
+    gap:4px;
+    grid-template-columns:1fr 1fr;
+  }
+
+  #questionBox{
+    grid-column:1/3;
+    order:-1;
+    font-size:1rem;
+    padding:5px 6px;
+    border-width:2px;
+    border-radius:12px;
+  }
+
+  .hud-card{
+    font-size:.65rem;
+    line-height:1.12;
+    padding:5px 6px;
+    border-width:2px;
+    border-radius:12px;
+    box-shadow:0 2px 0 #312e81;
+  }
+
+  #controls{
+    bottom:calc(6px + env(safe-area-inset-bottom));
+    padding:0 5px;
+  }
+
+  .dpad{
+    grid-template-columns:43px 43px 43px;
+    grid-template-rows:39px 39px;
+    gap:4px;
+  }
+
+  .ctrl{
+    width:43px;
+    height:39px;
+    font-size:.9rem;
+    border-radius:13px;
+    box-shadow:0 3px 0 #1d4ed8;
+  }
+
+  .weapon-stack{
+    gap:3px;
+  }
+
+  .weapon-buttons{
+    grid-template-columns:40px 52px 40px;
+    grid-template-rows:38px 38px;
+    gap:3px;
+  }
+
+  .shoot{
+    width:52px;
+    height:79px;
+    font-size:1.15rem;
+    border-radius:15px;
+  }
+
+  .side-shoot{
+    width:40px;
+    height:36px;
+    font-size:.78rem;
+  }
+
+  #backShootBtn{
+    width:48px;
+    height:32px;
+    font-size:.75rem;
+  }
+
+  .cheat-shoot{
+    width:126px;
+    height:28px;
+    font-size:.63rem;
+    border-radius:12px;
+  }
+
+  #player{
+    width:52px;
+    height:64px;
+  }
+
+  .ship-body{
+    left:15px;
+    width:24px;
+    height:56px;
+  }
+
+  .ship-wing{
+    top:30px;
+    width:23px;
+    height:15px;
+  }
+
+  .ship-cockpit{
+    left:20px;
+    top:16px;
+    width:14px;
+    height:15px;
+  }
+
+  .front-cannon{
+    left:22px;
+    width:9px;
+    height:15px;
+  }
+
+  .right-cannon{
+    right:-5px;
+    width:15px;
+    height:8px;
+  }
+
+  .left-cannon{
+    left:-5px;
+    width:15px;
+    height:8px;
+  }
+
+  .back-cannon{
+    left:22px;
+    top:55px;
+    width:9px;
+    height:15px;
+  }
+
+  .engine-flame{
+    left:20px;
+    top:59px;
+    width:14px;
+    height:18px;
+  }
+
+  .star-core{
+    left:17px;
+    top:28px;
+    width:19px;
+    height:19px;
+    font-size:11px;
+  }
+
+  .front-crystal{
+    left:18px;
+    top:-9px;
+    width:16px;
+    height:16px;
+  }
+
+  .right-crystal{
+    right:-11px;
+    top:31px;
+  }
+
+  .left-crystal{
+    left:-11px;
+    top:31px;
+  }
+
+  #player.shielded::before{
+    left:-13px;
+    top:-12px;
+    width:78px;
+    height:86px;
+    border-width:4px;
+  }
+
+  .enemy{
+    width:62px;
+    height:50px;
+  }
+
+  .enemy .eBody{
+    left:16px;
+    top:13px;
+    width:30px;
+    height:21px;
+    border-width:3px;
+  }
+
+  .enemy .eWing{
+    top:23px;
+    width:20px;
+    height:12px;
+    border-width:2px;
+  }
+
+  .answerTag{
+    top:-15px;
+    min-width:42px;
+    font-size:.8rem;
+    padding:2px 5px;
+    border-width:3px;
+    border-radius:10px;
+  }
+
+  #cheatAnswerBadge{
+    top:82px;
+    font-size:.8rem;
+    padding:5px 8px;
+    border-width:3px;
+  }
+
+  #shieldBadge{
+    top:116px;
+    font-size:.72rem;
+    padding:5px 8px;
+    border-width:3px;
+  }
+
+  #message{
+    width:94vw;
+    max-height:82dvh;
+    padding:12px;
+    border-radius:20px;
+    overflow:auto;
+  }
+
+  #message h2{
+    font-size:1.3rem;
+  }
+
+  #message p{
+    font-size:.86rem;
+    margin:6px 0;
+  }
+
+  .promotion-card{
+    padding:10px;
+    border-width:4px;
+  }
+
+  .promotion-rank{
+    font-size:2rem;
+  }
+
+  .land-scene{
+    min-height:200px;
+  }
+
+  .fact-tile{
+    font-size:.64rem;
+    padding:4px 5px;
+  }
+
+  .credit{
+    display:none;
+  }
 }
 </style>
 </head>
@@ -190,18 +1367,25 @@ button:disabled{opacity:.55;filter:grayscale(.5);cursor:not-allowed}
     <div class="cover-ship"></div>
 
     <div class="level-grid">
-      <div class="level-mini">L1<br>×1</div><div class="level-mini">L2<br>×2</div>
-      <div class="level-mini">L3<br>×3</div><div class="level-mini">L4<br>×4</div>
-      <div class="level-mini">L5<br>×5</div><div class="level-mini">L6<br>×6</div>
-      <div class="level-mini">L7<br>×7</div><div class="level-mini">L8<br>×8</div>
-      <div class="level-mini">L9<br>×9</div><div class="level-mini">L10<br>×10</div>
-      <div class="level-mini">L11<br>×11</div><div class="level-mini">L12<br>×12</div>
-      <div class="level-mini">L13<br>Mixed ×2–×12</div><div class="level-mini">Final Rank<br>5-Star General</div>
+      <div class="level-mini">L1<br>×1</div>
+      <div class="level-mini">L2<br>×2</div>
+      <div class="level-mini">L3<br>×3</div>
+      <div class="level-mini">L4<br>×4</div>
+      <div class="level-mini">L5<br>×5</div>
+      <div class="level-mini">L6<br>×6</div>
+      <div class="level-mini">L7<br>×7</div>
+      <div class="level-mini">L8<br>×8</div>
+      <div class="level-mini">L9<br>×9</div>
+      <div class="level-mini">L10<br>×10</div>
+      <div class="level-mini">L11<br>×11</div>
+      <div class="level-mini">L12<br>×12</div>
+      <div class="level-mini">L13<br>Mixed ×2–×12</div>
+      <div class="level-mini">Final Rank<br>5-Star General</div>
     </div>
 
     <p><b>Mission:</b> Shoot the alien spaceship with the correct answer.</p>
     <p><b>Progress:</b> Saved on this device after each cleared level.</p>
-    <p><b>Power-up:</b> 3 correct in a row gives a Force Shield.</p>
+    <p><b>Weapon:</b> Upgrades are shown clearly after each promotion.</p>
 
     <div class="btn-row">
       <button id="startBtn" type="button">Start New Mission</button>
@@ -222,7 +1406,7 @@ button:disabled{opacity:.55;filter:grayscale(.5);cursor:not-allowed}
       <div id="scoreBox" class="hud-card">
         Level: <span id="levelNow">1</span>/13<br>
         Rank: <span id="rankNow">Recruit</span><br>
-        Weapon: <span id="weaponNow">Front Cannon</span>
+        <span class="weaponLine">Weapon: <span id="weaponNow">Single Shot</span></span>
       </div>
 
       <div id="questionBox" class="hud-card">1 × 1 = ?</div>
@@ -243,6 +1427,9 @@ button:disabled{opacity:.55;filter:grayscale(.5);cursor:not-allowed}
       <div class="right-cannon"></div>
       <div class="left-cannon"></div>
       <div class="back-cannon"></div>
+      <div class="front-crystal laser-crystal"></div>
+      <div class="right-crystal laser-crystal"></div>
+      <div class="left-crystal laser-crystal"></div>
       <div class="engine-flame"></div>
       <div class="star-core">★</div>
     </div>
@@ -282,50 +1469,62 @@ document.addEventListener("contextmenu", e => e.preventDefault(), { passive:fals
 document.addEventListener("selectstart", e => e.preventDefault(), { passive:false });
 document.addEventListener("dragstart", e => e.preventDefault(), { passive:false });
 
-const SAVE_KEY="multiply_flyer_13_progress_v1";
+const SAVE_KEY = "multiply_flyer_13_progress_v2";
 
-const RANKS=[
-  "Recruit","Private","Corporal","Sergeant","Staff Sergeant","Lieutenant","Captain",
-  "Major","Lieutenant Colonel","Colonel","Brigadier","Major General","Lieutenant General","5-Star General"
+const RANKS = [
+  "Recruit",
+  "Private",
+  "Corporal",
+  "Sergeant",
+  "Staff Sergeant",
+  "Lieutenant",
+  "Captain",
+  "Major",
+  "Lieutenant Colonel",
+  "Colonel",
+  "Brigadier",
+  "Major General",
+  "Lieutenant General",
+  "5-Star General"
 ];
 
-const LEVELS=[
-  {level:1,tables:[1],questions:10,weapon:"Basic Front Cannon",note:"Front cannon unlocked."},
-  {level:2,tables:[2],questions:10,weapon:"Faster Front Cannon",note:"Front shot becomes faster."},
-  {level:3,tables:[3],questions:10,weapon:"Strong Front Cannon",note:"Front cannon looks stronger."},
-  {level:4,tables:[4],questions:10,weapon:"Right Cannon",note:"Right cannon unlocked."},
-  {level:5,tables:[5],questions:10,weapon:"Left Cannon",note:"Left cannon unlocked."},
-  {level:6,tables:[6],questions:10,weapon:"Back Cannon",note:"Back cannon unlocked."},
-  {level:7,tables:[7],questions:10,weapon:"Faster All Cannons",note:"All cannon shots become faster."},
-  {level:8,tables:[8],questions:10,weapon:"Larger Direct Shot",note:"Direct shots become larger."},
-  {level:9,tables:[9],questions:10,weapon:"Faster Reload",note:"Reload speed improves."},
-  {level:10,tables:[10],questions:10,weapon:"Front Precision Laser",note:"Front laser unlocked."},
-  {level:11,tables:[11],questions:10,weapon:"Side Precision Lasers",note:"Left and right lasers unlocked."},
-  {level:12,tables:[12],questions:10,weapon:"Back Precision Laser",note:"Back laser unlocked."},
-  {level:13,tables:[2,3,4,5,6,7,8,9,10,11,12],questions:22,weapon:"Star Cannon",note:"Star Cannon unlocked. It is direct and still requires aiming."}
+const LEVELS = [
+  {level:1,  tables:[1],  questions:10, weapon:"Single Shot", note:"Single front shot."},
+  {level:2,  tables:[2],  questions:10, weapon:"Double Shot", note:"Double front shot in succession unlocked."},
+  {level:3,  tables:[3],  questions:10, weapon:"Triple Shot", note:"Triple front shot in succession unlocked."},
+  {level:4,  tables:[4],  questions:10, weapon:"Triple Shot + Right Cannon", note:"Right Cannon unlocked."},
+  {level:5,  tables:[5],  questions:10, weapon:"Triple Shot + Left Cannon", note:"Left Cannon unlocked."},
+  {level:6,  tables:[6],  questions:10, weapon:"Triple Shot + Back Cannon", note:"Back Cannon unlocked."},
+  {level:7,  tables:[7],  questions:10, weapon:"Front Laser + Cannons", note:"Front Laser enabled. Other cannons remain."},
+  {level:8,  tables:[8],  questions:10, weapon:"Right Laser + Front Laser", note:"Right Laser enabled. Other cannons remain."},
+  {level:9,  tables:[9],  questions:10, weapon:"Left Laser + Other Lasers", note:"Left Laser enabled. Other cannons remain."},
+  {level:10, tables:[10], questions:10, weapon:"Front Star Cannon", note:"Front Star Cannon enabled. It is direct and still needs aiming."},
+  {level:11, tables:[11], questions:10, weapon:"Right Star Cannon", note:"Right Star Cannon enabled. It is direct and still needs aiming."},
+  {level:12, tables:[12], questions:10, weapon:"Left Star Cannon", note:"Left Star Cannon enabled. It is direct and still needs aiming."},
+  {level:13, tables:[2,3,4,5,6,7,8,9,10,11,12], questions:22, weapon:"Full Star Cannon", note:"Full Star Cannon unlocked: front, right, left and back."}
 ];
 
-let gameArea,player;
-let playerX=0,playerY=0,levelIndex=0,facts=[],current=0,score=0,totalScore=0;
-let correctAnswer=0,currentFact=null,lives=3,streak=0;
-let enemies=[],bullets=[],enemyBullets=[],keys={};
-let running=false,enemySpeed=0.8,bulletSpeed=8,animationId=null,shootCooldown=false;
-let audioCtx=null,draggingPlane=false,dragOffsetX=32,dragOffsetY=38;
-let respawnTimer=null,waveLocked=false;
-let cheatUsedThisLevel=false,cheatActive=false,slowMotionUntil=0;
-let shieldActive=false,shieldUntil=0,shieldTimer=null;
-let controlsBound=false,dragBound=false;
+let gameArea, player;
+let playerX = 0, playerY = 0, levelIndex = 0, facts = [], current = 0, score = 0, totalScore = 0;
+let correctAnswer = 0, currentFact = null, lives = 3, streak = 0;
+let enemies = [], bullets = [], enemyBullets = [], keys = {};
+let running = false, enemySpeed = 0.8, animationId = null, shootCooldown = false;
+let audioCtx = null, draggingPlane = false, dragOffsetX = 32, dragOffsetY = 38;
+let respawnTimer = null, waveLocked = false;
+let cheatUsedThisLevel = false, cheatActive = false, slowMotionUntil = 0;
+let shieldActive = false, shieldUntil = 0, shieldTimer = null;
+let controlsBound = false, dragBound = false;
 
-function $(id){return document.getElementById(id)}
+function $(id){ return document.getElementById(id); }
 
 function getSavedProgress(){
   try{
-    const raw=localStorage.getItem(SAVE_KEY);
+    const raw = localStorage.getItem(SAVE_KEY);
     if(!raw) return null;
-    const data=JSON.parse(raw);
-    if(!data || typeof data.highestLevelUnlocked!=="number") return null;
-    data.highestLevelUnlocked=Math.max(0,Math.min(13,data.highestLevelUnlocked));
-    data.totalScore=Number(data.totalScore)||0;
+    const data = JSON.parse(raw);
+    if(!data || typeof data.highestLevelUnlocked !== "number") return null;
+    data.highestLevelUnlocked = Math.max(0, Math.min(13, data.highestLevelUnlocked));
+    data.totalScore = Number(data.totalScore) || 0;
     return data;
   }catch(e){
     return null;
@@ -333,13 +1532,13 @@ function getSavedProgress(){
 }
 
 function saveProgress(highestLevelUnlocked,total){
-  const data={
-    highestLevelUnlocked:Math.max(0,Math.min(13,highestLevelUnlocked)),
-    totalScore:Math.max(0,total||0),
-    lastRank:RANKS[Math.max(0,Math.min(13,highestLevelUnlocked))],
-    updatedAt:Date.now()
+  const data = {
+    highestLevelUnlocked: Math.max(0, Math.min(13, highestLevelUnlocked)),
+    totalScore: Math.max(0,total || 0),
+    lastRank: RANKS[Math.max(0, Math.min(13, highestLevelUnlocked))],
+    updatedAt: Date.now()
   };
-  localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+  localStorage.setItem(SAVE_KEY, JSON.stringify(data));
   updateCoverProgressUI();
 }
 
@@ -349,88 +1548,94 @@ function clearSavedProgress(){
 }
 
 function updateCoverProgressUI(){
-  const data=getSavedProgress();
-  const continueBtn=$("continueBtn");
-  const resetBtn=$("resetProgressBtn");
-  const saveInfo=$("saveInfo");
+  const data = getSavedProgress();
+  const continueBtn = $("continueBtn");
+  const resetBtn = $("resetProgressBtn");
+  const saveInfo = $("saveInfo");
 
   if(!continueBtn || !saveInfo) return;
 
-  if(data && data.highestLevelUnlocked>0){
-    const nextLevel=Math.min(data.highestLevelUnlocked+1,13);
-    if(data.highestLevelUnlocked>=13){
-      continueBtn.textContent="Continue Final Mission";
-      saveInfo.textContent=`Saved: All levels cleared. Rank: 5-Star General. Total Score: ${data.totalScore}`;
+  if(data && data.highestLevelUnlocked > 0){
+    const nextLevel = Math.min(data.highestLevelUnlocked + 1, 13);
+
+    if(data.highestLevelUnlocked >= 13){
+      continueBtn.textContent = "Replay Final Level";
+      saveInfo.textContent = `Saved: All levels cleared. Rank: 5-Star General. Total Score: ${data.totalScore}`;
     }else{
-      continueBtn.textContent=`Continue Level ${nextLevel}`;
-      saveInfo.textContent=`Saved: Level ${data.highestLevelUnlocked} cleared. Next: Level ${nextLevel}. Rank: ${RANKS[data.highestLevelUnlocked]}.`;
+      continueBtn.textContent = `Continue Level ${nextLevel}`;
+      saveInfo.textContent = `Saved: Level ${data.highestLevelUnlocked} cleared. Next: Level ${nextLevel}. Rank: ${RANKS[data.highestLevelUnlocked]}.`;
     }
-    continueBtn.disabled=false;
-    if(resetBtn) resetBtn.disabled=false;
+
+    continueBtn.disabled = false;
+    if(resetBtn) resetBtn.disabled = false;
   }else{
-    continueBtn.textContent="Continue Mission";
-    continueBtn.disabled=true;
-    saveInfo.textContent="No saved progress yet. Progress will be saved on this device after each cleared level.";
-    if(resetBtn) resetBtn.disabled=true;
+    continueBtn.textContent = "Continue Mission";
+    continueBtn.disabled = true;
+    saveInfo.textContent = "No saved progress yet. Progress will be saved on this device after each cleared level.";
+    if(resetBtn) resetBtn.disabled = true;
   }
 }
 
 function showScreen(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   $(id).classList.add("active");
 }
 
 function showHow(){
-  $("cover").querySelector(".cover-card").innerHTML=`
+  $("cover").querySelector(".cover-card").innerHTML = `
     <h1>How to Play</h1>
     <p><b>Move:</b> Drag the spaceship or use the arrow buttons.</p>
-    <p><b>Shoot:</b> Use front, left, right and back cannons as they unlock.</p>
+    <p><b>Shoot:</b> Front, right, left and back weapons unlock as you progress.</p>
+    <p><b>Weapon Progression:</b> Single → Double → Triple → Side Cannons → Lasers → Star Cannon.</p>
     <p><b>Rigour:</b> All weapons fire directly. No spread shot. No auto-answer. You must aim.</p>
     <p><b>Force Shield:</b> 3 correct in a row protects you from enemy hits, but not wrong answers.</p>
-    <p><b>Cheat Shot:</b> Once per level, a slow shot shows the correct answer and flies to it.</p>
     <p><b>Progress:</b> Your progress is saved on this device after each cleared level.</p>
     <div class="btn-row">
       <button type="button" onclick="location.reload()">Back</button>
       <button class="success" type="button" onclick="startGame(false)">Start New Mission</button>
-    </div>`;
+    </div>
+  `;
 }
 
 function startGame(fromSave=false){
   showScreen("playScreen");
-  gameArea=$("gameArea");
-  player=$("player");
+  gameArea = $("gameArea");
+  player = $("player");
 
-  let startAt=0;
-  totalScore=0;
+  let startAt = 0;
+  totalScore = 0;
 
   if(fromSave){
-    const data=getSavedProgress();
+    const data = getSavedProgress();
     if(data){
-      if(data.highestLevelUnlocked>=13){
-        startAt=12;
-      }else{
-        startAt=data.highestLevelUnlocked;
-      }
-      totalScore=data.totalScore || 0;
+      startAt = data.highestLevelUnlocked >= 13 ? 12 : data.highestLevelUnlocked;
+      totalScore = data.totalScore || 0;
     }
   }else{
     clearSavedProgress();
-    startAt=0;
-    totalScore=0;
+    startAt = 0;
+    totalScore = 0;
   }
 
-  levelIndex=startAt;
-  lives=3;streak=0;keys={};
-  running=true;shootCooldown=false;draggingPlane=false;waveLocked=false;
-  cheatUsedThisLevel=false;cheatActive=false;slowMotionUntil=0;
+  levelIndex = startAt;
+  lives = 3;
+  streak = 0;
+  keys = {};
+  running = true;
+  shootCooldown = false;
+  draggingPlane = false;
+  waveLocked = false;
+  cheatUsedThisLevel = false;
+  cheatActive = false;
+  slowMotionUntil = 0;
 
-  gameArea.innerHTML="";
-  $("message").style.display="none";
+  gameArea.innerHTML = "";
+  $("message").style.display = "none";
   hideCheatBadge();
   deactivateShield();
 
-  playerX=window.innerWidth/2-32;
-  playerY=window.innerHeight-170;
+  playerX = window.innerWidth / 2 - 32;
+  playerY = window.innerHeight - 170;
   clampPlayer();
   updatePlayer();
 
@@ -440,283 +1645,436 @@ function startGame(fromSave=false){
   startLevel(levelIndex);
 
   if(animationId) cancelAnimationFrame(animationId);
-  animationId=requestAnimationFrame(loop);
+  animationId = requestAnimationFrame(loop);
 }
 
 function startLevel(index){
-  levelIndex=index;
-  const level=LEVELS[levelIndex];
+  levelIndex = index;
 
-  current=0;score=0;lives=3;streak=0;
-  enemies=[];bullets=[];enemyBullets=[];
-  enemySpeed=0.72+levelIndex*0.025;
-  waveLocked=false;
-  cheatUsedThisLevel=false;cheatActive=false;slowMotionUntil=0;
-  updateCheatButton();hideCheatBadge();deactivateShield();
+  current = 0;
+  score = 0;
+  lives = 3;
+  streak = 0;
+  enemies = [];
+  bullets = [];
+  enemyBullets = [];
+  enemySpeed = 0.78 + levelIndex * 0.025;
+  waveLocked = false;
+  cheatUsedThisLevel = false;
+  cheatActive = false;
+  slowMotionUntil = 0;
 
-  facts=makeFacts(level.tables,level.questions,levelIndex===12);
+  updateCheatButton();
+  hideCheatBadge();
+  deactivateShield();
 
-  $("message").style.display="none";
+  facts = makeFacts(LEVELS[levelIndex].tables, LEVELS[levelIndex].questions, levelIndex === 12);
+
+  $("message").style.display = "none";
   clearEnemiesAndBullets();
 
   updateShipClass();
   nextFact();
   updateHud();
   updateWeaponButtons();
+  showWeaponIntro();
+}
+
+function showWeaponIntro(){
+  showFloatingMessage(`Weapon upgraded: ${LEVELS[levelIndex].weapon}`, 850);
 }
 
 function makeFacts(tables,count,isMixed){
-  const pool=[];
+  const pool = [];
+
   if(isMixed){
-    tables.forEach(t=>{for(let m=2;m<=12;m++)pool.push([t,m])});
+    tables.forEach(t=>{
+      for(let m=2;m<=12;m++){
+        pool.push([t,m]);
+      }
+    });
   }else{
-    const t=tables[0];
-    for(let m=1;m<=12;m++) pool.push([t,m]);
+    const t = tables[0];
+    for(let m=1;m<=12;m++){
+      pool.push([t,m]);
+    }
   }
+
   shuffle(pool);
   return pool.slice(0,count);
 }
 
 function updateShipClass(){
-  player.className="";
-  player.classList.add("ship-lv"+(levelIndex+1));
+  player.className = "";
+  player.classList.add("ship-lv" + (levelIndex + 1));
 }
 
 function updateWeaponButtons(){
-  $("leftShootBtn").disabled=levelIndex<4;
-  $("rightShootBtn").disabled=levelIndex<3;
-  $("backShootBtn").disabled=levelIndex<5;
+  $("rightShootBtn").disabled = levelIndex < 3;
+  $("leftShootBtn").disabled = levelIndex < 4;
+  $("backShootBtn").disabled = levelIndex < 5;
 }
 
 function bindControls(){
-  if(controlsBound)return;
-  controlsBound=true;
+  if(controlsBound) return;
+  controlsBound = true;
 
-  document.onkeydown=e=>{
-    keys[e.key]=true;
-    if(e.code==="Space"){e.preventDefault();shoot("front")}
-    if(e.key==="q"||e.key==="Q")shoot("left");
-    if(e.key==="e"||e.key==="E")shoot("right");
-    if(e.key==="x"||e.key==="X")shoot("back");
-    if(e.key==="c"||e.key==="C")fireCheatShot();
+  document.onkeydown = e => {
+    keys[e.key] = true;
+    if(e.code === "Space"){ e.preventDefault(); shoot("front"); }
+    if(e.key === "q" || e.key === "Q") shoot("left");
+    if(e.key === "e" || e.key === "E") shoot("right");
+    if(e.key === "x" || e.key === "X") shoot("back");
+    if(e.key === "c" || e.key === "C") fireCheatShot();
   };
-  document.onkeyup=e=>{keys[e.key]=false};
 
-  holdButton("leftBtn",()=>keys["ArrowLeft"]=true,()=>keys["ArrowLeft"]=false);
-  holdButton("rightBtn",()=>keys["ArrowRight"]=true,()=>keys["ArrowRight"]=false);
-  holdButton("upBtn",()=>keys["ArrowUp"]=true,()=>keys["ArrowUp"]=false);
-  holdButton("downBtn",()=>keys["ArrowDown"]=true,()=>keys["ArrowDown"]=false);
+  document.onkeyup = e => {
+    keys[e.key] = false;
+  };
 
-  $("shootBtn").addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();shoot("front")},{passive:false});
-  $("leftShootBtn").addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();shoot("left")},{passive:false});
-  $("rightShootBtn").addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();shoot("right")},{passive:false});
-  $("backShootBtn").addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();shoot("back")},{passive:false});
-  $("cheatBtn").addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();fireCheatShot()},{passive:false});
+  holdButton("leftBtn", ()=>keys["ArrowLeft"]=true, ()=>keys["ArrowLeft"]=false);
+  holdButton("rightBtn", ()=>keys["ArrowRight"]=true, ()=>keys["ArrowRight"]=false);
+  holdButton("upBtn", ()=>keys["ArrowUp"]=true, ()=>keys["ArrowUp"]=false);
+  holdButton("downBtn", ()=>keys["ArrowDown"]=true, ()=>keys["ArrowDown"]=false);
+
+  $("shootBtn").addEventListener("pointerdown", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    shoot("front");
+  }, {passive:false});
+
+  $("leftShootBtn").addEventListener("pointerdown", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    shoot("left");
+  }, {passive:false});
+
+  $("rightShootBtn").addEventListener("pointerdown", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    shoot("right");
+  }, {passive:false});
+
+  $("backShootBtn").addEventListener("pointerdown", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    shoot("back");
+  }, {passive:false});
+
+  $("cheatBtn").addEventListener("pointerdown", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    fireCheatShot();
+  }, {passive:false});
 }
 
 function holdButton(id,down,up){
-  const btn=$(id);
-  btn.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();try{btn.setPointerCapture(e.pointerId)}catch(err){}down()},{passive:false});
-  btn.addEventListener("pointerup",e=>{e.preventDefault();e.stopPropagation();up()},{passive:false});
-  btn.addEventListener("pointercancel",e=>{e.preventDefault();e.stopPropagation();up()},{passive:false});
-  btn.addEventListener("lostpointercapture",()=>up());
+  const btn = $(id);
+
+  btn.addEventListener("pointerdown", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    try{ btn.setPointerCapture(e.pointerId); }catch(err){}
+    down();
+  }, {passive:false});
+
+  btn.addEventListener("pointerup", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    up();
+  }, {passive:false});
+
+  btn.addEventListener("pointercancel", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    up();
+  }, {passive:false});
+
+  btn.addEventListener("lostpointercapture", ()=>up());
 }
 
 function bindDragMovement(){
-  if(dragBound)return;
-  dragBound=true;
-  const game=$("game");
+  if(dragBound) return;
+  dragBound = true;
 
-  game.onpointerdown=e=>{
-    if(!running)return;
-    if(e.target.closest("button")||e.target.closest("a"))return;
+  const game = $("game");
 
-    const shipCenterX=playerX+32;
-    const shipCenterY=playerY+38;
-    const dx=e.clientX-shipCenterX;
-    const dy=e.clientY-shipCenterY;
-    const distance=Math.sqrt(dx*dx+dy*dy);
-    const lowerFlightZone=e.clientY>window.innerHeight*.45;
+  game.onpointerdown = e => {
+    if(!running) return;
+    if(e.target.closest("button") || e.target.closest("a")) return;
 
-    if(distance>230&&!lowerFlightZone){draggingPlane=false;return}
+    const shipCenterX = playerX + 32;
+    const shipCenterY = playerY + 38;
+    const dx = e.clientX - shipCenterX;
+    const dy = e.clientY - shipCenterY;
+    const distance = Math.sqrt(dx*dx + dy*dy);
+    const lowerFlightZone = e.clientY > window.innerHeight * 0.45;
 
-    draggingPlane=true;
-    dragOffsetX=e.clientX-playerX;
-    dragOffsetY=e.clientY-playerY;
-    try{game.setPointerCapture(e.pointerId)}catch(err){}
+    if(distance > 230 && !lowerFlightZone){
+      draggingPlane = false;
+      return;
+    }
+
+    draggingPlane = true;
+    dragOffsetX = e.clientX - playerX;
+    dragOffsetY = e.clientY - playerY;
+    try{ game.setPointerCapture(e.pointerId); }catch(err){}
   };
 
-  game.onpointermove=e=>{
-    if(!running||!draggingPlane)return;
-    playerX=e.clientX-dragOffsetX;
-    playerY=e.clientY-dragOffsetY;
+  game.onpointermove = e => {
+    if(!running || !draggingPlane) return;
+    playerX = e.clientX - dragOffsetX;
+    playerY = e.clientY - dragOffsetY;
     clampPlayer();
     updatePlayer();
   };
 
-  game.onpointerup=()=>draggingPlane=false;
-  game.onpointercancel=()=>draggingPlane=false;
-  game.onlostpointercapture=()=>draggingPlane=false;
+  game.onpointerup = ()=>draggingPlane=false;
+  game.onpointercancel = ()=>draggingPlane=false;
+  game.onlostpointercapture = ()=>draggingPlane=false;
 }
 
 function nextFact(){
-  if(current>=facts.length){levelCleared();return}
+  if(current >= facts.length){
+    levelCleared();
+    return;
+  }
 
-  currentFact=facts[current];
-  correctAnswer=currentFact[0]*currentFact[1];
+  currentFact = facts[current];
+  correctAnswer = currentFact[0] * currentFact[1];
 
-  $("questionBox").textContent=`${currentFact[0]} × ${currentFact[1]} = ?`;
+  $("questionBox").textContent = `${currentFact[0]} × ${currentFact[1]} = ?`;
+
   clearEnemiesAndBullets();
   spawnAnswerWave();
   updateHud();
 }
 
 function spawnAnswerWave(){
-  if(!running||waveLocked)return;
-  waveLocked=true;
+  if(!running || waveLocked) return;
 
-  const answers=generateAnswers(correctAnswer,4);
-  const isMobile=window.innerWidth<760;
-  const enemyWidth=isMobile?62:78;
-  const sidePadding=isMobile?20:56;
-  const minX=sidePadding;
-  const maxX=window.innerWidth-sidePadding-enemyWidth;
-  const safeX=x=>Math.max(minX,Math.min(maxX,x));
-  const rowGap=isMobile?130:180;
+  waveLocked = true;
 
-  const positions=[
-    {x:safeX(window.innerWidth*.18-enemyWidth/2),y:-90},
-    {x:safeX(window.innerWidth*.82-enemyWidth/2),y:-90},
-    {x:safeX(window.innerWidth*.35-enemyWidth/2),y:-90-rowGap},
-    {x:safeX(window.innerWidth*.65-enemyWidth/2),y:-90-rowGap}
+  const answers = generateAnswers(correctAnswer,4);
+  const isMobile = window.innerWidth < 760;
+  const enemyWidth = isMobile ? 62 : 78;
+  const sidePadding = isMobile ? 20 : 56;
+  const minX = sidePadding;
+  const maxX = window.innerWidth - sidePadding - enemyWidth;
+  const safeX = x => Math.max(minX, Math.min(maxX, x));
+  const rowGap = isMobile ? 135 : 185;
+
+  const positions = [
+    {x:safeX(window.innerWidth*.18 - enemyWidth/2), y:-95},
+    {x:safeX(window.innerWidth*.82 - enemyWidth/2), y:-95},
+    {x:safeX(window.innerWidth*.35 - enemyWidth/2), y:-95-rowGap},
+    {x:safeX(window.innerWidth*.65 - enemyWidth/2), y:-95-rowGap}
   ];
 
   answers.forEach((ans,i)=>{
-    const pos=positions[i];
-    createEnemy(pos.x,pos.y,ans,ans===correctAnswer);
+    const pos = positions[i];
+    createEnemy(pos.x,pos.y,ans,ans === correctAnswer);
   });
 
   setTimeout(()=>waveLocked=false,250);
 }
 
 function generateAnswers(correct,count=4){
-  const set=new Set([correct]);
-  const offsets=[-36,-32,-30,-28,-24,-20,-18,-16,-14,-12,-10,-9,-8,-7,-6,-5,-4,-3,3,4,5,6,7,8,9,10,12,14,16,18,20,24,28,30,32,36];
-  while(set.size<count){
-    const value=correct+offsets[Math.floor(Math.random()*offsets.length)];
-    if(value>0)set.add(value);
+  const set = new Set([correct]);
+  const offsets = [-36,-32,-30,-28,-24,-20,-18,-16,-14,-12,-10,-9,-8,-7,-6,-5,-4,-3,3,4,5,6,7,8,9,10,12,14,16,18,20,24,28,30,32,36];
+
+  while(set.size < count){
+    const value = correct + offsets[Math.floor(Math.random()*offsets.length)];
+    if(value > 0) set.add(value);
   }
+
   return Array.from(set).sort(()=>Math.random()-.5);
 }
 
 function createEnemy(x,y,answer,isCorrect){
-  const el=document.createElement("div");
-  el.className="enemy";
-  el.style.left=x+"px";
-  el.style.top=y+"px";
-  el.dataset.answer=answer;
-  el.dataset.correct=isCorrect?"1":"0";
-  el.innerHTML=`<div class="answerTag">${answer}</div><div class="eWing left"></div><div class="eWing right"></div><div class="eBody"></div>`;
+  const el = document.createElement("div");
+  el.className = "enemy";
+  el.style.left = x + "px";
+  el.style.top = y + "px";
+  el.dataset.answer = answer;
+  el.dataset.correct = isCorrect ? "1" : "0";
+
+  el.innerHTML = `
+    <div class="answerTag">${answer}</div>
+    <div class="eWing left"></div>
+    <div class="eWing right"></div>
+    <div class="eBody"></div>
+  `;
+
   gameArea.appendChild(el);
-  enemies.push({el,x,y,answer,correct:isCorrect,speed:enemySpeed+Math.random()*0.08,hasShot:false});
+
+  enemies.push({
+    el,
+    x,
+    y,
+    answer,
+    correct:isCorrect,
+    speed:enemySpeed + Math.random()*0.06,
+    hasShot:false
+  });
 }
 
 function shoot(direction){
-  if(!running||shootCooldown)return;
-  if(direction==="right"&&levelIndex<3)return;
-  if(direction==="left"&&levelIndex<4)return;
-  if(direction==="back"&&levelIndex<5)return;
+  if(!running || shootCooldown) return;
 
-  const cooldown=levelIndex>=8?120:levelIndex>=6?150:190;
-  shootCooldown=true;
+  if(direction === "right" && levelIndex < 3) return;
+  if(direction === "left" && levelIndex < 4) return;
+  if(direction === "back" && levelIndex < 5) return;
+
+  const cooldown = levelIndex >= 9 ? 135 : 185;
+  shootCooldown = true;
   setTimeout(()=>shootCooldown=false,cooldown);
 
-  if(levelIndex>=12)fireStar(direction);
-  else if(levelIndex>=9)fireLaser(direction);
-  else fireDirectBullet(direction);
+  if(levelIndex >= 9){
+    fireStarOrFallback(direction);
+  }else if(levelIndex >= 6){
+    fireLaserOrFallback(direction);
+  }else{
+    fireCannon(direction);
+  }
 
   playShoot();
 }
 
-function fireDirectBullet(direction){
-  const speed=levelIndex>=6?10:levelIndex>=1?8.5:7.5;
-  const big=levelIndex>=7;
-  const className=big?"bullet bigBullet":"bullet";
+function fireCannon(direction){
+  const speed = 8.6;
 
-  if(direction==="front")createBullet(playerX+28,playerY-18,0,-speed,className);
-  else if(direction==="right")createBullet(playerX+62,playerY+30,speed,0,className+" sideBullet");
-  else if(direction==="left")createBullet(playerX-10,playerY+30,-speed,0,className+" sideBullet");
-  else if(direction==="back")createBullet(playerX+28,playerY+68,0,speed,className+" backBullet");
+  if(direction === "front"){
+    const count = levelIndex >= 2 ? 3 : levelIndex >= 1 ? 2 : 1;
+    for(let i=0;i<count;i++){
+      setTimeout(()=>{
+        if(running) createBullet(playerX+28,playerY-18,0,-speed,"bullet");
+      }, i*85);
+    }
+  }
+
+  if(direction === "right"){
+    createBullet(playerX+62,playerY+30,speed,0,"bullet sideBullet");
+  }
+
+  if(direction === "left"){
+    createBullet(playerX-10,playerY+30,-speed,0,"bullet sideBullet");
+  }
+
+  if(direction === "back"){
+    createBullet(playerX+28,playerY+68,0,speed,"bullet backBullet");
+  }
+}
+
+function fireLaserOrFallback(direction){
+  if(direction === "front" && levelIndex >= 6){
+    fireFrontLaser();
+    return;
+  }
+
+  if(direction === "right" && levelIndex >= 7){
+    fireSideLaser("right");
+    return;
+  }
+
+  if(direction === "left" && levelIndex >= 8){
+    fireSideLaser("left");
+    return;
+  }
+
+  fireCannon(direction);
+}
+
+function fireStarOrFallback(direction){
+  if(direction === "front" && levelIndex >= 9){
+    fireStar(direction);
+    return;
+  }
+
+  if(direction === "right" && levelIndex >= 10){
+    fireStar(direction);
+    return;
+  }
+
+  if(direction === "left" && levelIndex >= 11){
+    fireStar(direction);
+    return;
+  }
+
+  if(direction === "back" && levelIndex >= 12){
+    fireStar(direction);
+    return;
+  }
+
+  fireLaserOrFallback(direction);
 }
 
 function fireStar(direction){
-  const speed=10.5;
-  if(direction==="front")createBullet(playerX+21,playerY-22,0,-speed,"bullet starBullet");
-  else if(direction==="right")createBullet(playerX+62,playerY+27,speed,0,"bullet starBullet");
-  else if(direction==="left")createBullet(playerX-20,playerY+27,-speed,0,"bullet starBullet");
-  else if(direction==="back")createBullet(playerX+21,playerY+68,0,speed,"bullet starBullet");
+  const speed = 10.5;
+
+  if(direction === "front"){
+    createBullet(playerX+21,playerY-22,0,-speed,"bullet starBullet");
+  }else if(direction === "right"){
+    createBullet(playerX+62,playerY+27,speed,0,"bullet starBullet");
+  }else if(direction === "left"){
+    createBullet(playerX-20,playerY+27,-speed,0,"bullet starBullet");
+  }else if(direction === "back"){
+    createBullet(playerX+21,playerY+68,0,speed,"bullet starBullet");
+  }
 }
 
 function createBullet(x,y,vx,vy,className){
-  const bullet=document.createElement("div");
-  bullet.className=className;
-  bullet.style.left=x+"px";
-  bullet.style.top=y+"px";
+  const bullet = document.createElement("div");
+  bullet.className = className;
+  bullet.style.left = x + "px";
+  bullet.style.top = y + "px";
   gameArea.appendChild(bullet);
   bullets.push({el:bullet,x,y,vx,vy});
 }
 
-function fireLaser(direction){
-  if(direction==="front"){
-    const laser=document.createElement("div");
-    laser.className="laserBeam";
-    laser.style.left=(playerX+21)+"px";
-    laser.style.top="0px";
-    laser.style.height=playerY+"px";
-    gameArea.appendChild(laser);
-    setTimeout(()=>laser.remove(),150);
-    checkLaserHit("front",playerX+21,playerX+45,0,playerY);
-  }else if(direction==="right"&&levelIndex>=10){
-    fireSideLaser("right");
-  }else if(direction==="left"&&levelIndex>=10){
-    fireSideLaser("left");
-  }else if(direction==="back"&&levelIndex>=11){
-    const laser=document.createElement("div");
-    laser.className="laserBeam";
-    laser.style.left=(playerX+21)+"px";
-    laser.style.top=(playerY+68)+"px";
-    laser.style.height=(window.innerHeight-playerY-68)+"px";
-    gameArea.appendChild(laser);
-    setTimeout(()=>laser.remove(),150);
-    checkLaserHit("back",playerX+21,playerX+45,playerY+68,window.innerHeight);
-  }else{
-    fireDirectBullet(direction);
-  }
+function fireFrontLaser(){
+  const laser = document.createElement("div");
+  laser.className = "laserBeam";
+  laser.style.left = (playerX+21) + "px";
+  laser.style.top = "0px";
+  laser.style.height = playerY + "px";
+  gameArea.appendChild(laser);
+  setTimeout(()=>laser.remove(),150);
+  checkLaserHit("front",playerX+21,playerX+45,0,playerY);
 }
 
 function fireSideLaser(direction){
-  const laser=document.createElement("div");
-  laser.className="sideLaserBeam";
-  const y=playerY+31;
-  if(direction==="left"){
-    laser.style.left="0px";laser.style.top=y+"px";laser.style.width=playerX+"px";
+  const laser = document.createElement("div");
+  laser.className = "sideLaserBeam";
+  const y = playerY + 31;
+
+  if(direction === "left"){
+    laser.style.left = "0px";
+    laser.style.top = y + "px";
+    laser.style.width = playerX + "px";
   }else{
-    laser.style.left=(playerX+64)+"px";laser.style.top=y+"px";laser.style.width=(window.innerWidth-playerX-64)+"px";
+    laser.style.left = (playerX+64) + "px";
+    laser.style.top = y + "px";
+    laser.style.width = (window.innerWidth-playerX-64) + "px";
   }
+
   gameArea.appendChild(laser);
   setTimeout(()=>laser.remove(),150);
   checkSideLaserHit(direction,y);
 }
 
 function checkLaserHit(direction,left,right,top,bottom){
-  const hitList=enemies.map((e,index)=>{
-    const r=e.el.getBoundingClientRect();
+  const hitList = enemies.map((e,index)=>{
+    const r = e.el.getBoundingClientRect();
     return {e,index,r:{left:r.left+10,right:r.right-10,top:r.top+8,bottom:r.bottom-8}};
-  }).filter(item=>item.r.right>=left&&item.r.left<=right&&item.r.bottom>=top&&item.r.top<=bottom)
-    .sort((a,b)=>direction==="front"?b.r.bottom-a.r.bottom:a.r.top-b.r.top);
+  }).filter(item=>{
+    return item.r.right>=left && item.r.left<=right && item.r.bottom>=top && item.r.top<=bottom;
+  }).sort((a,b)=> direction==="front" ? b.r.bottom-a.r.bottom : a.r.top-b.r.top);
 
-  if(!hitList.length)return;
-  const hit=hitList[0],e=hit.e;
+  if(!hitList.length) return;
+
+  const hit = hitList[0];
+  const e = hit.e;
   makeSpark(e.x+36,e.y+26);
   e.el.remove();
   enemies.splice(hit.index,1);
@@ -724,17 +2082,19 @@ function checkLaserHit(direction,left,right,top,bottom){
 }
 
 function checkSideLaserHit(direction,laserY){
-  const hitList=enemies.map((e,index)=>{
-    const r=e.el.getBoundingClientRect();
+  const hitList = enemies.map((e,index)=>{
+    const r = e.el.getBoundingClientRect();
     return {e,index,r:{left:r.left+10,right:r.right-10,top:r.top+8,bottom:r.bottom-8}};
   }).filter(item=>{
-    const sameLine=laserY>=item.r.top&&laserY<=item.r.bottom;
-    const correctDir=direction==="left"?item.r.right<playerX:item.r.left>playerX;
-    return sameLine&&correctDir;
-  }).sort((a,b)=>direction==="left"?b.r.right-a.r.right:a.r.left-b.r.left);
+    const sameLine = laserY>=item.r.top && laserY<=item.r.bottom;
+    const correctDir = direction==="left" ? item.r.right<playerX : item.r.left>playerX;
+    return sameLine && correctDir;
+  }).sort((a,b)=> direction==="left" ? b.r.right-a.r.right : a.r.left-b.r.left);
 
-  if(!hitList.length)return;
-  const hit=hitList[0],e=hit.e;
+  if(!hitList.length) return;
+
+  const hit = hitList[0];
+  const e = hit.e;
   makeSpark(e.x+36,e.y+26);
   e.el.remove();
   enemies.splice(hit.index,1);
@@ -742,71 +2102,116 @@ function checkSideLaserHit(direction,laserY){
 }
 
 function fireCheatShot(){
-  if(!running||cheatUsedThisLevel||cheatActive)return;
-  const target=enemies.find(e=>e.correct);
-  if(!target)return;
+  if(!running || cheatUsedThisLevel || cheatActive) return;
 
-  cheatUsedThisLevel=true;
-  cheatActive=true;
-  slowMotionUntil=Date.now()+2600;
+  const target = enemies.find(e=>e.correct);
+  if(!target) return;
+
+  cheatUsedThisLevel = true;
+  cheatActive = true;
+  slowMotionUntil = Date.now() + 2600;
 
   target.el.classList.add("cheatTarget");
   showCheatBadge(`Correct answer: ${correctAnswer}`);
   updateCheatButton();
 
-  const bullet=document.createElement("div");
-  bullet.className="bullet cheatBullet";
-  bullet.style.left=(playerX+24)+"px";
-  bullet.style.top=(playerY+8)+"px";
+  const bullet = document.createElement("div");
+  bullet.className = "bullet cheatBullet";
+  bullet.style.left = (playerX+24) + "px";
+  bullet.style.top = (playerY+8) + "px";
   gameArea.appendChild(bullet);
 
-  bullets.push({el:bullet,x:playerX+24,y:playerY+8,vx:0,vy:0,cheat:true,target});
+  bullets.push({
+    el:bullet,
+    x:playerX+24,
+    y:playerY+8,
+    vx:0,
+    vy:0,
+    cheat:true,
+    target
+  });
+
   playPromotionSound();
 }
 
 function updateCheatButton(){
-  const btn=$("cheatBtn");
-  if(!btn)return;
+  const btn = $("cheatBtn");
+  if(!btn) return;
+
   if(cheatUsedThisLevel){
-    btn.textContent="🎯 Used";btn.classList.add("used");btn.disabled=true;
+    btn.textContent = "🎯 Used";
+    btn.classList.add("used");
+    btn.disabled = true;
   }else{
-    btn.textContent="🎯 Cheat Shot";btn.classList.remove("used");btn.disabled=false;
+    btn.textContent = "🎯 Cheat Shot";
+    btn.classList.remove("used");
+    btn.disabled = false;
   }
 }
 
-function showCheatBadge(text){const badge=$("cheatAnswerBadge");if(badge){badge.textContent=text;badge.style.display="block"}}
-function hideCheatBadge(){const badge=$("cheatAnswerBadge");if(badge)badge.style.display="none"}
+function showCheatBadge(text){
+  const badge = $("cheatAnswerBadge");
+  if(badge){
+    badge.textContent = text;
+    badge.style.display = "block";
+  }
+}
+
+function hideCheatBadge(){
+  const badge = $("cheatAnswerBadge");
+  if(badge) badge.style.display = "none";
+}
 
 function activateShield(){
-  shieldActive=true;
-  shieldUntil=Date.now()+15000;
-  if(player)player.classList.add("shielded");
+  shieldActive = true;
+  shieldUntil = Date.now() + 15000;
+
+  if(player) player.classList.add("shielded");
   showShieldBadge();
 
-  if(shieldTimer)clearInterval(shieldTimer);
-  shieldTimer=setInterval(()=>{
-    const secondsLeft=Math.max(0,Math.ceil((shieldUntil-Date.now())/1000));
-    if(secondsLeft<=0)deactivateShield();
-    else{
-      const badge=$("shieldBadge");
-      if(badge)badge.textContent=`🛡️ Force Shield: ${secondsLeft}s`;
+  if(shieldTimer) clearInterval(shieldTimer);
+
+  shieldTimer = setInterval(()=>{
+    const secondsLeft = Math.max(0, Math.ceil((shieldUntil - Date.now()) / 1000));
+
+    if(secondsLeft <= 0){
+      deactivateShield();
+    }else{
+      const badge = $("shieldBadge");
+      if(badge) badge.textContent = `🛡️ Force Shield: ${secondsLeft}s`;
     }
   },250);
 }
 
 function deactivateShield(){
-  shieldActive=false;
-  shieldUntil=0;
-  if(player)player.classList.remove("shielded");
+  shieldActive = false;
+  shieldUntil = 0;
+
+  if(player) player.classList.remove("shielded");
   hideShieldBadge();
-  if(shieldTimer){clearInterval(shieldTimer);shieldTimer=null}
+
+  if(shieldTimer){
+    clearInterval(shieldTimer);
+    shieldTimer = null;
+  }
 }
 
-function showShieldBadge(){const badge=$("shieldBadge");if(badge){badge.textContent="🛡️ Force Shield: 15s";badge.style.display="block"}}
-function hideShieldBadge(){const badge=$("shieldBadge");if(badge)badge.style.display="none"}
+function showShieldBadge(){
+  const badge = $("shieldBadge");
+  if(badge){
+    badge.textContent = "🛡️ Force Shield: 15s";
+    badge.style.display = "block";
+  }
+}
+
+function hideShieldBadge(){
+  const badge = $("shieldBadge");
+  if(badge) badge.style.display = "none";
+}
 
 function loop(){
-  if(!running)return;
+  if(!running) return;
+
   movePlayer();
   moveBullets();
   moveEnemyBullets();
@@ -814,70 +2219,87 @@ function loop(){
   enemyShootBack();
   checkCollisions();
   checkEnemyBulletHits();
-  animationId=requestAnimationFrame(loop);
+
+  animationId = requestAnimationFrame(loop);
 }
 
 function movePlayer(){
-  const speed=8.5;
-  if(keys["ArrowLeft"]||keys["a"]||keys["A"])playerX-=speed;
-  if(keys["ArrowRight"]||keys["d"]||keys["D"])playerX+=speed;
-  if(keys["ArrowUp"]||keys["w"]||keys["W"])playerY-=speed;
-  if(keys["ArrowDown"]||keys["s"]||keys["S"])playerY+=speed;
+  const speed = 8.5;
+
+  if(keys["ArrowLeft"] || keys["a"] || keys["A"]) playerX -= speed;
+  if(keys["ArrowRight"] || keys["d"] || keys["D"]) playerX += speed;
+  if(keys["ArrowUp"] || keys["w"] || keys["W"]) playerY -= speed;
+  if(keys["ArrowDown"] || keys["s"] || keys["S"]) playerY += speed;
+
   clampPlayer();
   updatePlayer();
 }
 
 function clampPlayer(){
-  const isMobile=window.innerWidth<=760;
-  playerX=Math.max(6,Math.min(window.innerWidth-60,playerX));
-  const topLimit=isMobile?92:82;
-  const bottomReserved=isMobile?112:190;
-  const bottomLimit=window.innerHeight-bottomReserved;
-  playerY=Math.max(topLimit,Math.min(bottomLimit,playerY));
+  const isMobile = window.innerWidth <= 760;
+  playerX = Math.max(6, Math.min(window.innerWidth - 60, playerX));
+
+  const topLimit = isMobile ? 92 : 82;
+  const bottomReserved = isMobile ? 112 : 175;
+  const bottomLimit = window.innerHeight - bottomReserved;
+
+  playerY = Math.max(topLimit, Math.min(bottomLimit, playerY));
 }
 
 function updatePlayer(){
-  if(!player)return;
-  player.style.left=playerX+"px";
-  player.style.top=playerY+"px";
+  if(!player) return;
+  player.style.left = playerX + "px";
+  player.style.top = playerY + "px";
 }
 
 function moveBullets(){
   bullets.forEach(b=>{
     if(b.cheat){
-      if(!b.target||!enemies.includes(b.target)){
-        b.el.remove();b.dead=true;cheatActive=false;hideCheatBadge();return;
+      if(!b.target || !enemies.includes(b.target)){
+        b.el.remove();
+        b.dead = true;
+        cheatActive = false;
+        hideCheatBadge();
+        return;
       }
 
-      const targetX=b.target.x+39,targetY=b.target.y+28;
-      const dx=targetX-b.x,dy=targetY-b.y,dist=Math.sqrt(dx*dx+dy*dy),speed=3.2;
+      const targetX = b.target.x + 39;
+      const targetY = b.target.y + 28;
+      const dx = targetX - b.x;
+      const dy = targetY - b.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const speed = 3.2;
 
-      if(dist<14){
+      if(dist < 14){
         makeSpark(b.target.x+36,b.target.y+26);
-        b.el.remove();b.dead=true;
+        b.el.remove();
+        b.dead = true;
         b.target.el.classList.remove("cheatTarget");
         b.target.el.remove();
-        const index=enemies.indexOf(b.target);
-        if(index>=0)enemies.splice(index,1);
-        cheatActive=false;hideCheatBadge();
+
+        const index = enemies.indexOf(b.target);
+        if(index >= 0) enemies.splice(index,1);
+
+        cheatActive = false;
+        hideCheatBadge();
         handleEnemyHit(b.target,"cheat");
         return;
       }
 
-      b.x+=(dx/dist)*speed;
-      b.y+=(dy/dist)*speed;
+      b.x += (dx/dist) * speed;
+      b.y += (dy/dist) * speed;
     }else{
-      b.x+=b.vx;
-      b.y+=b.vy;
+      b.x += b.vx;
+      b.y += b.vy;
     }
 
-    b.el.style.left=b.x+"px";
-    b.el.style.top=b.y+"px";
+    b.el.style.left = b.x + "px";
+    b.el.style.top = b.y + "px";
   });
 
-  bullets=bullets.filter(b=>{
-    if(b.dead||b.y<-50||b.y>window.innerHeight+60||b.x<-70||b.x>window.innerWidth+70){
-      if(!b.dead)b.el.remove();
+  bullets = bullets.filter(b=>{
+    if(b.dead || b.y < -50 || b.y > window.innerHeight + 60 || b.x < -70 || b.x > window.innerWidth + 70){
+      if(!b.dead) b.el.remove();
       return false;
     }
     return true;
@@ -885,65 +2307,102 @@ function moveBullets(){
 }
 
 function enemyShootBack(){
-  if(!running)return;
-  if(enemyBullets.length>=2)return;
-  if(!enemies.length)return;
+  if(!running) return;
+  if(enemyBullets.length >= 2) return;
+  if(!enemies.length) return;
 
-  const ready=enemies.filter(e=>!e.hasShot&&e.y>40&&e.y<window.innerHeight*.42);
-  if(!ready.length||Math.random()>.04)return;
+  const ready = enemies.filter(e=>!e.hasShot && e.y > 40 && e.y < window.innerHeight * .42);
 
-  const shooter=ready[Math.floor(Math.random()*ready.length)];
-  shooter.hasShot=true;
+  if(!ready.length || Math.random() > .04) return;
 
-  const bullet=document.createElement("div");
-  bullet.className="enemyBullet";
-  const x=shooter.x+34,y=shooter.y+58;
-  bullet.style.left=x+"px";
-  bullet.style.top=y+"px";
+  const shooter = ready[Math.floor(Math.random()*ready.length)];
+  shooter.hasShot = true;
+
+  const bullet = document.createElement("div");
+  bullet.className = "enemyBullet";
+
+  const x = shooter.x + 34;
+  const y = shooter.y + 58;
+
+  bullet.style.left = x + "px";
+  bullet.style.top = y + "px";
   gameArea.appendChild(bullet);
-  enemyBullets.push({el:bullet,x,y,speed:1.75+Math.random()*0.25});
+
+  enemyBullets.push({
+    el:bullet,
+    x,
+    y,
+    speed:1.75 + Math.random()*0.25
+  });
 }
 
 function moveEnemyBullets(){
-  enemyBullets.forEach(b=>{b.y+=b.speed;b.el.style.top=b.y+"px"});
-  enemyBullets=enemyBullets.filter(b=>{
-    if(b.y>window.innerHeight+40){b.el.remove();return false}
+  enemyBullets.forEach(b=>{
+    b.y += b.speed;
+    b.el.style.top = b.y + "px";
+  });
+
+  enemyBullets = enemyBullets.filter(b=>{
+    if(b.y > window.innerHeight + 40){
+      b.el.remove();
+      return false;
+    }
     return true;
   });
 }
 
 function moveEnemies(){
-  const slowFactor=Date.now()<slowMotionUntil?0.25:1;
-  enemies.forEach(e=>{e.y+=e.speed*slowFactor;e.el.style.top=e.y+"px"});
-  enemies=enemies.filter(e=>{
-    if(e.y>window.innerHeight+80){
+  const slowFactor = Date.now() < slowMotionUntil ? 0.25 : 1;
+
+  enemies.forEach(e=>{
+    e.y += e.speed * slowFactor;
+    e.el.style.top = e.y + "px";
+  });
+
+  enemies = enemies.filter(e=>{
+    if(e.y > window.innerHeight + 80){
       e.el.remove();
-      if(e.correct&&running)loseLife("The correct answer flew away!",true);
+
+      if(e.correct && running){
+        loseLife("The correct answer flew away!",true);
+      }
+
       return false;
     }
     return true;
   });
 
-  if(!enemies.length&&running&&!respawnTimer&&!waveLocked)spawnAnswerWave();
+  if(!enemies.length && running && !respawnTimer && !waveLocked){
+    spawnAnswerWave();
+  }
 }
 
 function checkCollisions(){
-  for(let bi=bullets.length-1;bi>=0;bi--){
-    const b=bullets[bi];
-    if(b.cheat)continue;
-    const br=b.el.getBoundingClientRect();
+  for(let bi=bullets.length-1; bi>=0; bi--){
+    const b = bullets[bi];
+    if(b.cheat) continue;
 
-    for(let ei=enemies.length-1;ei>=0;ei--){
-      const e=enemies[ei];
-      const er=e.el.getBoundingClientRect();
-      const box={left:er.left+10,right:er.right-10,top:er.top+8,bottom:er.bottom-8};
+    const br = b.el.getBoundingClientRect();
+
+    for(let ei=enemies.length-1; ei>=0; ei--){
+      const e = enemies[ei];
+      const er = e.el.getBoundingClientRect();
+
+      const box = {
+        left:er.left+10,
+        right:er.right-10,
+        top:er.top+8,
+        bottom:er.bottom-8
+      };
 
       if(rectHit(br,box)){
         makeSpark(e.x+36,e.y+26);
         b.el.remove();
         e.el.remove();
+
         bullets.splice(bi,1);
         enemies.splice(ei,1);
+
         handleEnemyHit(e,"bullet");
         return;
       }
@@ -957,18 +2416,20 @@ function handleEnemyHit(e,type){
     totalScore++;
     streak++;
 
-    if(streak>0&&streak%3===0)activateShield();
+    if(streak > 0 && streak % 3 === 0){
+      activateShield();
+    }
 
     current++;
     playCorrect();
-    enemySpeed=Math.min(enemySpeed+0.03,2.1);
+    enemySpeed = Math.min(enemySpeed + 0.03, 2.1);
     updateHud();
     setTimeout(nextFact,430);
   }else{
-    streak=0;
+    streak = 0;
     playWrong();
 
-    if(shieldActive&&Date.now()<shieldUntil){
+    if(shieldActive && Date.now() < shieldUntil){
       loseLife("Wrong answer. Force Shield only protects you from being hit, not from choosing a wrong answer.",false);
     }else{
       loseLife("Wrong answer.",false);
@@ -977,12 +2438,13 @@ function handleEnemyHit(e,type){
 }
 
 function checkEnemyBulletHits(){
-  if(!running||!player)return;
-  const pr=player.getBoundingClientRect();
+  if(!running || !player) return;
 
-  for(let i=enemyBullets.length-1;i>=0;i--){
-    const b=enemyBullets[i];
-    const br=b.el.getBoundingClientRect();
+  const pr = player.getBoundingClientRect();
+
+  for(let i=enemyBullets.length-1; i>=0; i--){
+    const b = enemyBullets[i];
+    const br = b.el.getBoundingClientRect();
 
     if(rectHit(pr,br)){
       makeSpark(playerX+30,playerY+30);
@@ -995,35 +2457,45 @@ function checkEnemyBulletHits(){
   }
 }
 
-function rectHit(a,b){return !(a.right<b.left||a.left>b.right||a.bottom<b.top||a.top>b.bottom)}
+function rectHit(a,b){
+  return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+}
 
 function loseLife(text,shieldCanProtect=true){
-  if(shieldCanProtect&&shieldActive&&Date.now()<shieldUntil){
+  if(shieldCanProtect && shieldActive && Date.now() < shieldUntil){
     showFloatingMessage("🛡️ Force Shield protected you! No life lost.",700);
     clearEnemiesAndBullets();
-    respawnTimer=setTimeout(()=>{respawnTimer=null;if(running)spawnAnswerWave()},700);
+
+    respawnTimer = setTimeout(()=>{
+      respawnTimer = null;
+      if(running) spawnAnswerWave();
+    },700);
+
     return;
   }
 
   lives--;
-  streak=0;
+  streak = 0;
   updateHud();
   clearEnemiesAndBullets();
 
-  if(lives<=0){
+  if(lives <= 0){
     endGame();
   }else{
     showFloatingMessage(text,900);
-    respawnTimer=setTimeout(()=>{respawnTimer=null;if(running)spawnAnswerWave()},950);
+    respawnTimer = setTimeout(()=>{
+      respawnTimer = null;
+      if(running) spawnAnswerWave();
+    },950);
   }
 }
 
 function levelCleared(){
-  running=false;
+  running = false;
   clearEnemiesAndBullets();
   deactivateShield();
 
-  const clearedLevel=levelIndex+1;
+  const clearedLevel = levelIndex + 1;
   saveProgress(clearedLevel,totalScore);
 
   playPromotionSound();
@@ -1032,10 +2504,10 @@ function levelCleared(){
 }
 
 function showLandingFacts(){
-  const level=LEVELS[levelIndex];
-  const factsHtml=makeStageFactTiles(level.tables,levelIndex===12);
+  const level = LEVELS[levelIndex];
+  const factsHtml = makeStageFactTiles(level.tables, levelIndex === 12);
 
-  $("message").innerHTML=`
+  $("message").innerHTML = `
     <h2>Level ${levelIndex+1} Cleared! 🚀</h2>
     <div class="land-scene">
       <div class="land-plane">🚀</div>
@@ -1047,50 +2519,62 @@ function showLandingFacts(){
       <button class="bomb-button" onclick="blastFacts()">💣 Launch Space Bomb!</button>
     </div>
   `;
-  $("message").style.display="block";
+
+  $("message").style.display = "block";
 }
 
 function makeStageFactTiles(tables,isMixed){
-  const tiles=[];
+  const tiles = [];
+
   if(isMixed){
-    for(let t=2;t<=12;t++)tiles.push(`×${t}`);
+    for(let t=2;t<=12;t++){
+      tiles.push(`×${t}`);
+    }
   }else{
-    const t=tables[0];
-    for(let m=1;m<=12;m++)tiles.push(`${t} × ${m}`);
+    const t = tables[0];
+    for(let m=1;m<=12;m++){
+      tiles.push(`${t} × ${m}`);
+    }
   }
+
   shuffle(tiles);
+
   return tiles.slice(0,18).map(fact=>`<div class="fact-tile">${fact}</div>`).join("");
 }
 
 function blastFacts(){
-  const tiles=document.querySelectorAll(".fact-tile");
+  const tiles = document.querySelectorAll(".fact-tile");
+
   playPromotionSound();
   burstConfetti(40);
 
   tiles.forEach((tile,index)=>{
-    setTimeout(()=>{tile.classList.add("blast");playWrong()},index*35);
+    setTimeout(()=>{
+      tile.classList.add("blast");
+      playWrong();
+    },index*35);
   });
 
   setTimeout(()=>{
-    const factField=$("factField");
-    if(factField)factField.innerHTML=`<div class="blast-word">KABOOM!</div>`;
+    const factField = $("factField");
+    if(factField) factField.innerHTML = `<div class="blast-word">KABOOM!</div>`;
   },800);
 
   setTimeout(()=>showPromotionScreen(),1500);
 }
 
 function showPromotionScreen(){
-  const clearedLevel=levelIndex+1;
-  const newRank=RANKS[Math.min(levelIndex+1,RANKS.length-1)];
-  const nextLevel=LEVELS[levelIndex+1];
+  const clearedLevel = levelIndex + 1;
+  const newRank = RANKS[Math.min(levelIndex + 1, RANKS.length - 1)];
+  const nextLevel = LEVELS[levelIndex + 1];
 
-  if(levelIndex<LEVELS.length-1){
-    $("message").innerHTML=`
+  if(levelIndex < LEVELS.length - 1){
+    $("message").innerHTML = `
       <h2>Promotion Earned! 🎉</h2>
       <div class="promotion-card">
         <div class="promotion-small">You are promoted to</div>
         <div class="promotion-rank">${newRank}</div>
-        <div class="weapon-note">${nextLevel.note}</div>
+        <div class="weapon-note">Next Upgrade: ${nextLevel.note}</div>
       </div>
       <p>Level ${clearedLevel} Score: <b>${score}/${facts.length}</b></p>
       <p>Your progress has been saved on this device.</p>
@@ -1100,7 +2584,7 @@ function showPromotionScreen(){
       </div>
     `;
   }else{
-    $("message").innerHTML=`
+    $("message").innerHTML = `
       <h2>Final Promotion! 🎉</h2>
       <div class="promotion-card">
         <div class="promotion-small">You are now</div>
@@ -1117,27 +2601,28 @@ function showPromotionScreen(){
     sillyPlaneDance();
   }
 
-  $("message").style.display="block";
+  $("message").style.display = "block";
 }
 
 function continueToNextLevel(){
-  running=true;
-  startLevel(levelIndex+1);
-  if(animationId)cancelAnimationFrame(animationId);
-  animationId=requestAnimationFrame(loop);
+  running = true;
+  startLevel(levelIndex + 1);
+
+  if(animationId) cancelAnimationFrame(animationId);
+  animationId = requestAnimationFrame(loop);
 }
 
 function endGame(){
-  running=false;
+  running = false;
   clearEnemiesAndBullets();
   deactivateShield();
 
-  const canContinue=levelIndex>0;
-  const continueButton=canContinue
+  const canContinue = levelIndex > 0;
+  const continueButton = canContinue
     ? `<button class="success" onclick="continueSameLevel()">Continue from Level ${levelIndex+1}</button>`
     : `<button class="success" onclick="startGame(false)">Restart Mission</button>`;
 
-  $("message").innerHTML=`
+  $("message").innerHTML = `
     <h2>Mission Paused! 🚀</h2>
     <p>You reached Level ${levelIndex+1}.</p>
     <p>Current Rank: <b>${RANKS[levelIndex]}</b></p>
@@ -1149,87 +2634,102 @@ function endGame(){
       <a class="button secondary" href="https://limkimsze-maker.github.io/">Back to Main Menu</a>
     </div>
   `;
-  $("message").style.display="block";
+
+  $("message").style.display = "block";
 }
 
 function continueSameLevel(){
-  running=true;
-  lives=3;
-  streak=0;
-  cheatUsedThisLevel=false;
-  cheatActive=false;
-  slowMotionUntil=0;
+  running = true;
+  lives = 3;
+  streak = 0;
+  cheatUsedThisLevel = false;
+  cheatActive = false;
+  slowMotionUntil = 0;
+
   updateCheatButton();
   hideCheatBadge();
   deactivateShield();
 
   startLevel(levelIndex);
 
-  if(animationId)cancelAnimationFrame(animationId);
-  animationId=requestAnimationFrame(loop);
+  if(animationId) cancelAnimationFrame(animationId);
+  animationId = requestAnimationFrame(loop);
 }
 
 function updateHud(){
-  const level=LEVELS[levelIndex];
-  $("levelNow").textContent=levelIndex+1;
-  $("rankNow").textContent=RANKS[levelIndex];
-  $("weaponNow").textContent=level.weapon;
-  $("score").textContent=score;
-  $("levelTotal").textContent=facts.length;
-  $("lives").textContent="❤️".repeat(lives)+"♡".repeat(3-lives);
-  $("streak").textContent=streak;
+  const level = LEVELS[levelIndex];
+
+  $("levelNow").textContent = levelIndex + 1;
+  $("rankNow").textContent = RANKS[levelIndex];
+  $("weaponNow").textContent = level.weapon;
+  $("score").textContent = score;
+  $("levelTotal").textContent = facts.length;
+  $("lives").textContent = "❤️".repeat(lives) + "♡".repeat(3-lives);
+  $("streak").textContent = streak;
 }
 
 function clearEnemiesAndBullets(){
-  if(respawnTimer){clearTimeout(respawnTimer);respawnTimer=null}
+  if(respawnTimer){
+    clearTimeout(respawnTimer);
+    respawnTimer = null;
+  }
+
   enemies.forEach(e=>e.el.remove());
   bullets.forEach(b=>b.el.remove());
   enemyBullets.forEach(b=>b.el.remove());
-  enemies=[];bullets=[];enemyBullets=[];
-  waveLocked=false;
-  cheatActive=false;
-  slowMotionUntil=0;
+
+  enemies = [];
+  bullets = [];
+  enemyBullets = [];
+  waveLocked = false;
+  cheatActive = false;
+  slowMotionUntil = 0;
   hideCheatBadge();
 }
 
 function showFloatingMessage(text,ms){
-  const msg=$("message");
-  msg.innerHTML=`<h2>Careful!</h2><p>${text}</p>`;
-  msg.style.display="block";
-  setTimeout(()=>{if(running)msg.style.display="none"},ms);
+  const msg = $("message");
+  msg.innerHTML = `<h2>Notice</h2><p>${text}</p>`;
+  msg.style.display = "block";
+
+  setTimeout(()=>{
+    if(running) msg.style.display = "none";
+  },ms);
 }
 
 function makeSpark(x,y){
-  const s=document.createElement("div");
-  s.className="spark";
-  s.style.left=x+"px";
-  s.style.top=y+"px";
+  const s = document.createElement("div");
+  s.className = "spark";
+  s.style.left = x + "px";
+  s.style.top = y + "px";
   gameArea.appendChild(s);
   setTimeout(()=>s.remove(),400);
 }
 
 function makeClouds(){
   for(let i=0;i<12;i++){
-    const c=document.createElement("div");
-    c.className="cloud";
-    c.style.left=Math.random()*100+"vw";
-    c.style.top=-Math.random()*100+"px";
-    c.style.opacity=.18+Math.random()*.18;
-    c.style.animationDuration=14+Math.random()*8+"s";
-    c.style.animationDelay=-Math.random()*8+"s";
+    const c = document.createElement("div");
+    c.className = "cloud";
+    c.style.left = Math.random()*100 + "vw";
+    c.style.top = -Math.random()*100 + "px";
+    c.style.opacity = .18 + Math.random()*.18;
+    c.style.animationDuration = 14 + Math.random()*8 + "s";
+    c.style.animationDelay = -Math.random()*8 + "s";
     gameArea.appendChild(c);
   }
 }
 
 function sillyPlaneDance(){
   let t=0;
+
   const dance=setInterval(()=>{
     t++;
-    player.style.transform=`translateX(-50%) rotate(${Math.sin(t)*18}deg) scale(${1+Math.sin(t*1.5)*.08})`;
-    player.style.top=`${playerY+Math.sin(t)*18}px`;
+    player.style.transform = `translateX(-50%) rotate(${Math.sin(t)*18}deg) scale(${1+Math.sin(t*1.5)*.08})`;
+    player.style.top = `${playerY+Math.sin(t)*18}px`;
+
     if(t>28){
       clearInterval(dance);
-      player.style.transform="translateX(-50%)";
+      player.style.transform = "translateX(-50%)";
       updatePlayer();
     }
   },90);
@@ -1237,32 +2737,36 @@ function sillyPlaneDance(){
 
 function burstConfetti(count){
   const colors=["#ef4444","#facc15","#22c55e","#3b82f6","#a855f7","#fb923c"];
+
   for(let i=0;i<count;i++){
-    const p=document.createElement("div");
-    p.className="confetti";
-    p.style.left=Math.random()*100+"vw";
-    p.style.background=colors[Math.floor(Math.random()*colors.length)];
-    p.style.animationDuration=1.5+Math.random()*1.5+"s";
+    const p = document.createElement("div");
+    p.className = "confetti";
+    p.style.left = Math.random()*100 + "vw";
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDuration = 1.5 + Math.random()*1.5 + "s";
     document.body.appendChild(p);
     setTimeout(()=>p.remove(),3000);
   }
 }
 
 function getAudio(){
-  if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   return audioCtx;
 }
 
 function beep(freq,dur,type="sine",gainVal=.06){
   try{
-    const ctx=getAudio();
-    const o=ctx.createOscillator();
-    const g=ctx.createGain();
-    o.type=type;
-    o.frequency.value=freq;
-    g.gain.value=gainVal;
+    const ctx = getAudio();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+
+    o.type = type;
+    o.frequency.value = freq;
+    g.gain.value = gainVal;
+
     o.connect(g);
     g.connect(ctx.destination);
+
     o.start();
     g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+dur);
     o.stop(ctx.currentTime+dur);
@@ -1276,8 +2780,8 @@ function playPromotionSound(){[523,659,784,1046,1318].forEach((n,i)=>setTimeout(
 
 function shuffle(arr){
   for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
   }
 }
 
@@ -1297,7 +2801,7 @@ function setupStartButtons(){
   $("resetProgressBtn").addEventListener("click",e=>{
     e.preventDefault();
     e.stopPropagation();
-    const ok=confirm("Reset saved progress on this device?");
+    const ok = confirm("Reset saved progress on this device?");
     if(ok){
       clearSavedProgress();
       alert("Saved progress has been reset.");
